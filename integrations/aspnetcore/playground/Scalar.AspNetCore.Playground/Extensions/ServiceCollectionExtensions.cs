@@ -2,6 +2,7 @@ using APIWeaver;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
+using Scalar.AspNetCore.Extensions;
 
 namespace Scalar.AspNetCore.Playground.Extensions;
 
@@ -46,6 +47,8 @@ internal static class ServiceCollectionExtensions
                     document.Info.Version = versionDescription?.ApiVersion.ToString();
                 });
                 options.AddDocumentTransformer((document, _) => document.Servers = []);
+                options.AddScalarTransformers();
+                options.GroupTags("public", "bookstore");
             });
         }
     }
