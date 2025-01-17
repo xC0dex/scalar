@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Scalar.AspNetCore.Extensions;
 
 namespace Scalar.AspNetCore.Playground.Books;
 
@@ -29,6 +30,7 @@ internal static class BookEndpoints
                 var book = bookStore.GetById(bookId);
                 return book is null ? Results.NotFound() : Results.Ok(book);
             })
+            .ExcludeFromApiReference()
             .Produces<Book>()
             .Produces(StatusCodes.Status404NotFound);
 
