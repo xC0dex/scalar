@@ -191,8 +191,12 @@ public static class ScalarEndpointRouteBuilderExtensions
                           console.log(basePath)
                           const openApiUrl = `${window.location.origin}${basePath}/{{documentUrl}}`
                           const reference = document.getElementById('api-reference')
+                          const configuration = {{serializedConfiguration}};
+                          
+                          {{(options.DynamicServer ? "configuration.servers = [{url: getRelativeServerUrl(basePath)}]" : "")}}
+                          
                           reference.dataset.url = openApiUrl;
-                          reference.dataset.configuration = JSON.stringify({{serializedConfiguration}})
+                          reference.dataset.configuration = JSON.stringify(configuration)
                       </script>
                       <script src="{{standaloneResourceUrl}}"></script>
                   </body>

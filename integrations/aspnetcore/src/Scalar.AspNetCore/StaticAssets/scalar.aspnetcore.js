@@ -11,3 +11,14 @@ function getBasePath(suffix) {
   }
   return path
 }
+
+/**
+ * Constructs a relative server URL from the given base path.
+ * @param {string} basePath - The base path to convert to a relative server URL.
+ * @returns {string} The relative server URL.
+ */
+// eslint-disable-next-line
+function getRelativeServerUrl(basePath) {
+  if (basePath.startsWith('/')) return basePath
+  else return `/${basePath}`
+}

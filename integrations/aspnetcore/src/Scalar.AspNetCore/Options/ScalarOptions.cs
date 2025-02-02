@@ -243,4 +243,9 @@ public sealed class ScalarOptions
     /// </example>
     [StringSyntax("html")]
     public string? HeaderContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the HTML content to be rendered in the footer section of the page.
+    /// </summary>
+    public bool DynamicServer { get; set; }
 }
