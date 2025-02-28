@@ -23,6 +23,8 @@ internal static class ServiceCollectionExtensions
         });
 
         string[] versions = ["v1", "v2"];
+        
+        services.Configure<ScalarOptions>(options => options.AddDocuments(versions));
 
         foreach (var version in versions)
         {

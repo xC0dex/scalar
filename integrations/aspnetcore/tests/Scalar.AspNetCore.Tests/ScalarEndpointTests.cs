@@ -158,27 +158,6 @@ public class ScalarEndpointTests(WebApplicationFactory<Program> factory) : IClas
     }
 
     [Fact]
-    public async Task MapScalarApiReference_ShouldUseDocumentProvider_WhenSpecified()
-    {
-        // Arranges
-        var client = factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureTestServices(services =>
-            {
-                services.Configure<ScalarOptions>(options => options.WithDocumentNamesProvider(_ => ["v2"]));
-            });
-        }).CreateClient();
-
-        // Act
-        var response = await client.GetAsync("/scalar/", TestContext.Current.CancellationToken);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        content.ReplaceLineEndings().Should().Contain("/openapi/v2.json").And.NotContain("/openapi/v1.json");
-    }
-
-    [Fact]
     public async Task MapScalarApiReference_ShouldUseCustomCdn_WhenRequested()
     {
         // Arrange

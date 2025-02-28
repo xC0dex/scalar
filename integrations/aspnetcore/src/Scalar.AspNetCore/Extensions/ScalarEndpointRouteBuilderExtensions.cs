@@ -126,7 +126,7 @@ public static class ScalarEndpointRouteBuilderExtensions
         // Handle static assets
         scalarEndpointGroup.MapStaticAssetsEndpoint();
 
-        return scalarEndpointGroup.MapGet("/{documentName?}", async (HttpContext httpContext, IOptionsSnapshot<ScalarOptions> optionsSnapshot, string? documentName, CancellationToken cancellationToken) =>
+        return scalarEndpointGroup.MapGet("/{documentName?}", (HttpContext httpContext, IOptionsSnapshot<ScalarOptions> optionsSnapshot, string? documentName) =>
         {
             // Redirect to the trailing slash if the path does not end with a slash but only when the document name is not provided
             var path = httpContext.Request.Path;
@@ -148,13 +148,6 @@ public static class ScalarEndpointRouteBuilderExtensions
             {
                 options.Documents.Clear();
                 options.AddDocument(documentName);
-            }
-            // If a document names provider is provided, clear the document names and get the document names from the provider
-            else if (options.DocumentNamesProvider is not null)
-            {
-                options.Documents.Clear();
-                var documentNames = await options.DocumentNamesProvider.Invoke(httpContext, cancellationToken);
-                options.AddDocument(documentNames);
             }
             // If no document names or provider are provided, fallback to the default document name
             else if (options.Documents.Count == 0)
