@@ -128,16 +128,9 @@ public static class ScalarEndpointRouteBuilderExtensions
 
         return scalarEndpointGroup.MapGet("/{documentName?}", (HttpContext httpContext, IOptionsSnapshot<ScalarOptions> optionsSnapshot, string? documentName) =>
         {
-            // Redirect to the trailing slash if the path does not end with a slash but only when the document name is not provided
-            var path = httpContext.Request.Path;
-            if (documentName is null && path.HasValue && !path.Value.EndsWith('/'))
+            if (ShouldRedirectToTrailingSlash(httpContext, documentName, out var redirectUrl))
             {
-                var lastSlashIndex = path.Value.LastIndexOf('/');
-                if (lastSlashIndex != -1)
-                {
-                    var redirectUrl = $"{path.Value[(lastSlashIndex + 1)..]}/";
-                    return Results.Redirect(redirectUrl);
-                }
+                return Results.Redirect(redirectUrl);
             }
 
             var options = optionsSnapshot.Value;
@@ -147,7 +140,7 @@ public static class ScalarEndpointRouteBuilderExtensions
             if (!string.IsNullOrEmpty(documentName))
             {
                 options.Documents.Clear();
-                options.AddDocument(documentName);
+                options.AddDocuments(documentName);
             }
             // If no document names or provider are provided, fallback to the default document name
             else if (options.Documents.Count == 0)
@@ -155,12 +148,11 @@ public static class ScalarEndpointRouteBuilderExtensions
                 options.AddDocument("v1");
             }
 
-            var standaloneResourceUrl = string.IsNullOrEmpty(options.CdnUrl) ? ScalarJavaScriptFile : options.CdnUrl;
-
             var configuration = options.ToScalarConfiguration();
             var serializedConfiguration = JsonSerializer.Serialize(configuration, typeof(ScalarConfiguration), ScalarConfigurationSerializerContext.Default);
 
             var title = options.Documents.Count == 1 ? options.Title?.Replace(DocumentName, options.Documents[0]) : options.Title;
+            var standaloneResourceUrl = string.IsNullOrEmpty(options.CdnUrl) ? ScalarJavaScriptFile : options.CdnUrl;
 
             // Workaround. Once we support multiple OpenAPI documents, we must update this.
             var documentUrl = configuration.Documents.First();
@@ -216,5 +208,22 @@ public static class ScalarEndpointRouteBuilderExtensions
 
         var ifNoneMatch = httpContext.Request.Headers.IfNoneMatch.ToString();
         return ifNoneMatch == etag ? Results.StatusCode(StatusCodes.Status304NotModified) : Results.Stream(resourceFile.CreateReadStream(), MediaTypeNames.Text.JavaScript, entityTag: new EntityTagHeaderValue(etag));
+    }
+
+    private static bool ShouldRedirectToTrailingSlash(HttpContext httpContext, string? documentName, [NotNullWhen(true)] out string? redirectUrl)
+    {
+        redirectUrl = null;
+        // Redirect to the trailing slash if the path does not end with a slash but only when the document name is not provided
+        var path = httpContext.Request.Path;
+        if (documentName is null && path.HasValue && !path.Value.EndsWith('/'))
+        {
+            var lastSlashIndex = path.Value.LastIndexOf('/');
+            if (lastSlashIndex != -1)
+            {
+                redirectUrl = $"{path.Value[(lastSlashIndex + 1)..]}/";
+            }
+        }
+
+        return redirectUrl is not null;
     }
 }
