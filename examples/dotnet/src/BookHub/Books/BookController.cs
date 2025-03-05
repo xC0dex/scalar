@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookHub.Books;
@@ -8,6 +9,7 @@ namespace BookHub.Books;
 [ApiVersion(1)]
 [ApiVersion(2)]
 [Tags("controller")]
+[Authorize]
 public sealed class BookController(BookStore bookStore) : ControllerBase
 {
     [HttpGet]

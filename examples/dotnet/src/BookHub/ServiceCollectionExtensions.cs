@@ -1,4 +1,6 @@
 using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
 
 namespace BookHub;
 
@@ -34,6 +36,30 @@ internal static class ServiceCollectionExtensions
                 options.AddDocumentTransformer((document, _, _) =>
                 {
                     document.Servers = [];
+                    return Task.CompletedTask;
+                });
+
+                options.AddDocumentTransformer((document, _, _) =>
+                {
+                    var securityScheme = new OpenApiSecurityScheme
+                    {
+                        Type = SecuritySchemeType.Http,
+                        Flows = new OpenApiOAuthFlows
+                        {
+                            AuthorizationCode = new OpenApiOAuthFlow
+                            {
+                                AuthorizationUrl = new Uri("http://localhost:8080/realms/master/protocol/openid-connect/auth"),
+                                TokenUrl = new Uri("http://localhost:8080/realms/master/protocol/openid-connect/token")
+                            }
+                        },
+                        In = ParameterLocation.Header,
+                        Scheme = "bearer"
+                        // Scheme = "bearer",
+                        // BearerFormat = "JWT",
+                        // In = ParameterLocation.Header,
+                    };
+                    document.Components ??= new OpenApiComponents();
+                    document.Components.SecuritySchemes.Add(JwtBearerDefaults.AuthenticationScheme, securityScheme);
                     return Task.CompletedTask;
                 });
             });
