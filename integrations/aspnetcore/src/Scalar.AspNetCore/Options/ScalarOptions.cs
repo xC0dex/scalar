@@ -236,4 +236,26 @@ public sealed class ScalarOptions
     /// </example>
     [StringSyntax("html")]
     public string? HeaderContent { get; set; }
+
+
+    /// <summary>
+    /// Gets or sets the base server URL for the Scalar API reference.
+    /// </summary>
+    /// <value>The default value is <c>null</c>.</value>
+    /// <remarks>
+    /// This URL will be used as the base for defined servers. If <see cref="DynamicBaseServerUrl"/> is set to <c>true</c>,
+    /// this URL will be dynamically adjusted based on the request context.
+    /// </remarks>
+    [StringSyntax(StringSyntaxAttribute.Uri)]
+    public string? BaseServerUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the base server URL should be dynamically adjusted based on the request context.
+    /// </summary>
+    /// <value>The default value is <c>false</c>.</value>
+    /// <remarks>
+    /// When set to <c>true</c>, the <see cref="BaseServerUrl"/> property will be overwritten and the base server URL will be dynamically
+    /// adjusted based on the request context. This only works for relative server URLs.
+    /// </remarks>
+    public bool DynamicBaseServerUrl { get; set; }
 }

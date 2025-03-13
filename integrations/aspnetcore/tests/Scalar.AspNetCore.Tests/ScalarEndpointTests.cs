@@ -35,7 +35,7 @@ public class ScalarEndpointTests(WebApplicationFactory<Program> factory) : IClas
                                     <script src="scalar.aspnetcore.js"></script>
                                     <script src="scalar.js"></script>
                                     <script>
-                                        initialize('/scalar/', false, *)
+                                        initialize('/scalar/', false, false, *)
                                     </script>
                                 </body>
                                 </html>

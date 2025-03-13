@@ -266,6 +266,14 @@ public static class ScalarOptionsExtensions
     public static ScalarOptions AddServer(this ScalarOptions options, [StringSyntax(StringSyntaxAttribute.Uri)] string url) => options.AddServer(new ScalarServer(url));
 
     /// <summary>
+    /// Adds a server to the list of servers in the <see cref="ScalarOptions" /> using a URL and description.
+    /// </summary>
+    /// <param name="options"><see cref="ScalarOptions" />.</param>
+    /// <param name="url">The URL of the server to add.</param>
+    /// <param name="description">The description of the server.</param>
+    public static ScalarOptions AddServer(this ScalarOptions options, [StringSyntax(StringSyntaxAttribute.Uri)] string url, string description) => options.AddServer(new ScalarServer(url, description));
+
+    /// <summary>
     /// Adds metadata to the configuration.
     /// </summary>
     /// <param name="options"><see cref="ScalarOptions" />.</param>
