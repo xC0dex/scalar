@@ -35,7 +35,7 @@ export const getBasePath = (suffix) => {
  * @param {Object} configuration - Scalar configuration object
  * @param {Array<Object>} [configuration.sources=[]] - Array of OpenAPI source configurations
  */
-export const initialize = (path, isOpenApiRoutePatternUrl, configuration = { sources: [] }) => {
+export const initialize = async (path, isOpenApiRoutePatternUrl, configuration = { sources: [] }) => {
   const basePath = getBasePath(path)
 
   const normalizedConfig = {
@@ -56,6 +56,11 @@ export const initialize = (path, isOpenApiRoutePatternUrl, configuration = { sou
       }
     })
   }
+
+  const customConfiguration = await import(`${basePath}/config.js`)
+  Object.assign(normalizedConfig, customConfiguration.default)
+
+  console.log(normalizedConfig)
 
   Scalar.createApiReference('#app', normalizedConfig)
 }
