@@ -34,31 +34,40 @@ export const getBasePath = (suffix) => {
  * @param {Object} configuration - Scalar configuration object
  * @param {Array<Object>} [configuration.sources=[]] - Array of OpenAPI source configurations
  */
-export const initialize = (path, useDynamicBaseServerUrl, configuration = { sources: [] }) => {
+export const initialize = (path, useDynamicBaseServerUrl, configuration) => {
   const basePath = getBasePath(path)
 
-  const normalizedConfig = {
-    ...configuration,
-    sources: configuration?.sources?.map((source) => ({ ...source })) || [],
-  }
+  const configs = Array.isArray(configuration) ? configuration : [configuration]
 
+  console.log(configs)
+  const normalizedConfigs = []
   const httpUrlPattern = /^https?:\/\//i
 
-  // Construct full URLs for subdirectory hosting support if URLs are relative
-  normalizedConfig.sources = normalizedConfig.sources.map((source) => {
-    if (!source.url || httpUrlPattern.test(source.url)) {
-      return source
+  configs.forEach((config) => {
+    const normalizedConfig = {
+      ...config,
+      sources: config?.sources?.map((source) => ({ ...source })) || [],
     }
 
-    return {
-      ...source,
-      url: new URL(source.url, `${window.location.origin}${basePath}/`).toString(),
+    // Construct full URLs for subdirectory hosting support if URLs are relative
+    normalizedConfig.sources = normalizedConfig.sources.map((source) => {
+      if (!source.url || httpUrlPattern.test(source.url)) {
+        return source
+      }
+
+      return {
+        ...source,
+        url: new URL(source.url, `${window.location.origin}${basePath}/`).toString(),
+      }
+    })
+
+    if (useDynamicBaseServerUrl) {
+      normalizedConfig.baseServerURL = `${window.location.origin}${basePath}`
     }
+
+    normalizedConfigs.push(normalizedConfig)
   })
 
-  if (useDynamicBaseServerUrl) {
-    normalizedConfig.baseServerURL = `${window.location.origin}${basePath}`
-  }
-
-  Scalar.createApiReference('#app', normalizedConfig)
+  const finalConfig = normalizedConfigs.length === 1 ? normalizedConfigs[0] : normalizedConfigs
+  Scalar.createApiReference('#app', finalConfig)
 }
