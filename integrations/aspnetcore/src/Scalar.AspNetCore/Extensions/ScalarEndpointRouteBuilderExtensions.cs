@@ -19,7 +19,7 @@ public static class ScalarEndpointRouteBuilderExtensions
     private const string DocumentName = "{documentName}";
     private const string LegacyPattern = $"/scalar/{DocumentName}";
     private const string DefaultEndpointPrefix = "/scalar";
-    internal const string ScalarJavaScriptFile = "scalar.js";
+    private const string ScalarJavaScriptFile = "scalar.js";
     private const string ScalarJavaScriptHelperFile = "scalar.aspnetcore.js";
 
     private static readonly EmbeddedFileProvider FileProvider = new(typeof(ScalarEndpointRouteBuilderExtensions).Assembly, "ScalarStaticAssets");
@@ -142,7 +142,7 @@ public static class ScalarEndpointRouteBuilderExtensions
                 options.Documents.Clear();
                 options.AddDocument(documentName);
             }
-            // If no document names or provider are provided, fallback to the default document name
+            // If no document names are provided, fallback to the default document name
             else if (options.Documents.Count == 0)
             {
                 options.AddDocument("v1");
@@ -151,36 +151,73 @@ public static class ScalarEndpointRouteBuilderExtensions
             var configuration = options.ToScalarConfiguration();
             var serializedConfiguration = JsonSerializer.Serialize(configuration, typeof(ScalarConfiguration), ScalarConfigurationSerializerContext.Default);
 
-            var title = options.Documents.Count == 1 ? options.Title?.Replace(DocumentName, options.Documents[0].Name) : options.Title;
+            options.Title = options.Documents.Count == 1 ? options.Title?.Replace(DocumentName, options.Documents[0].Name) : options.Title;
             var standaloneResourceUrl = string.IsNullOrEmpty(options.CdnUrl) ? ScalarJavaScriptFile : options.CdnUrl;
 
-            return Results.Content(
-                $$"""
-                  <!doctype html>
-                  <html>
-                  <head>
-                      <title>{{title}}</title>
-                      <meta charset="utf-8" />
-                      <meta name="viewport" content="width=device-width, initial-scale=1" />
-                      {{options.HeadContent}}
-                  </head>
-                  <body>
-                      {{options.HeaderContent}}
-                      <div id="app"></div>
-                      <script type="module" src="{{ScalarJavaScriptHelperFile}}"></script>
-                      <script type="module" src="{{standaloneResourceUrl}}"></script>
-                      <script type="module">
-                          import { initialize } from './{{ScalarJavaScriptHelperFile}}'
-                          initialize(
-                          '{{httpContext.Request.Path}}',
-                          {{options.DynamicBaseServerUrl.ToString().ToLowerInvariant()}},
-                          {{serializedConfiguration}})
-                      </script>
-                  </body>
-                  </html>
-                  """, "text/html");
+            return Content(options, standaloneResourceUrl, httpContext.Request.Path, serializedConfiguration);
         });
     }
+
+    /// <summary>
+    /// Maps the Scalar API reference endpoint with multiple configurations.
+    /// </summary>
+    /// <param name="endpoints">The <see cref="IEndpointRouteBuilder" /> to which the endpoint will be added.</param>
+    /// <param name="endpointPrefix">The prefix for the endpoint.</param>
+    /// <param name="endpointOptions">The options for configuring the endpoint.</param>
+    /// <param name="options">The collection of API reference options.</param>
+    /// <remarks>
+    /// This endpoint is currently used by the Aspire integration.
+    /// </remarks>
+    internal static IEndpointConventionBuilder MapScalarApiReference(this IEndpointRouteBuilder endpoints, [StringSyntax("Route")] string endpointPrefix, IScalarEndpointOptions endpointOptions,
+        IEnumerable<ScalarApiReferenceOptions> options)
+    {
+        var scalarEndpointGroup = endpoints.MapGroup(endpointPrefix).ExcludeFromDescription();
+
+        // Handle static assets
+        scalarEndpointGroup.MapStaticAssetsEndpoint();
+
+        return scalarEndpointGroup.MapGet("/", (HttpContext httpContext) =>
+        {
+            if (ShouldRedirectToTrailingSlash(httpContext, null, out var redirectUrl))
+            {
+                return Results.Redirect(redirectUrl);
+            }
+
+            var configurations = options.ToScalarConfigurations();
+            var serializedConfigurations = JsonSerializer.Serialize(configurations, typeof(IEnumerable<ScalarConfiguration>), ScalarConfigurationSerializerContext.Default);
+
+            var standaloneResourceUrl = string.IsNullOrEmpty(endpointOptions.CdnUrl) ? ScalarJavaScriptFile : endpointOptions.CdnUrl;
+
+            return Content(endpointOptions, standaloneResourceUrl, httpContext.Request.Path, serializedConfigurations);
+        });
+    }
+
+    private static IResult Content(IScalarEndpointOptions endpointOptions, string resourceUrl, string requestPath, string configuration) =>
+        Results.Content(
+            $$"""
+              <!doctype html>
+              <html>
+              <head>
+                  <title>{{endpointOptions.Title}}</title>
+                  <meta charset="utf-8" />
+                  <meta name="viewport" content="width=device-width, initial-scale=1" />
+                  {{endpointOptions.HeadContent}}
+              </head>
+              <body>
+                  {{endpointOptions.HeaderContent}}
+                  <div id="app"></div>
+                  <script type="module" src="{{ScalarJavaScriptHelperFile}}"></script>
+                  <script type="module" src="{{resourceUrl}}"></script>
+                  <script type="module">
+                      import { initialize } from './{{ScalarJavaScriptHelperFile}}'
+                      initialize(
+                      '{{requestPath}}',
+                      {{endpointOptions.DynamicBaseServerUrl.ToString().ToLowerInvariant()}},
+                      {{configuration}})
+                  </script>
+              </body>
+              </html>
+              """, "text/html");
 
     /// <summary>
     /// Maps the endpoint for serving static assets.
