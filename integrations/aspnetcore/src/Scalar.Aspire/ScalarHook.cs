@@ -7,13 +7,14 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using Yarp.ReverseProxy.Transforms;
 
 namespace Scalar.Aspire;
 
-internal sealed class ScalarHook(ResourceNotificationService notificationService, IServiceProvider serviceProvider) : IDistributedApplicationLifecycleHook, IAsyncDisposable
+internal sealed class ScalarHook(ResourceNotificationService notificationService, IServiceProvider serviceProvider, ResourceLoggerService resourceLoggerService) : IDistributedApplicationLifecycleHook, IAsyncDisposable
 {
     private WebApplication? _app;
     public ValueTask DisposeAsync() => _app?.DisposeAsync() ?? ValueTask.CompletedTask;
@@ -29,11 +30,16 @@ internal sealed class ScalarHook(ResourceNotificationService notificationService
 
         var scalarAnnotations = scalarResource.Annotations.OfType<ScalarAnnotation>();
 
-        var endpointAnnotations = scalarResource.Annotations.OfType<EndpointAnnotation>().Select(annotation => $"{annotation.UriScheme}://{annotation.TargetHost}:{annotation.Port}");
+        
 
         var builder = WebApplication.CreateBuilder();
 
-        builder.WebHost.UseUrls(endpointAnnotations.ToArray());
+        // Todo: Unclear how to tackle ports and schemas
+        // If any endpoint was configured, use them. Otherwise, use random ports
+        var endpointAnnotations = scalarResource.Annotations.OfType<EndpointAnnotation>().Select(annotation => $"{annotation.UriScheme}://{annotation.TargetHost}:{annotation.Port}").ToArray();
+        var hostUrls = endpointAnnotations.Length > 0 ? endpointAnnotations : ["http://*:0", "https://*:0"];
+
+        builder.WebHost.UseUrls(hostUrls);
         builder.Services.AddHttpForwarder();
 
         _app = builder.Build();
