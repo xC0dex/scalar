@@ -5,8 +5,8 @@ namespace Scalar.Aspire;
 
 public static class ResourceBuilderExtensions
 {
-    public static void WithReference(this IResourceBuilder<ScalarResource> builder, IResourceBuilder<ProjectResource> projectResourceBuilder, Action<ScalarApiReferenceOptions>? configureOptions = null)
+    public static IResourceBuilder<ScalarResource> WithReference(this IResourceBuilder<ScalarResource> builder, IResourceBuilder<ProjectResource> projectResourceBuilder, Action<ScalarApiReferenceOptions>? configureOptions = null)
     {
-        builder.WithAnnotation(new ScalarAnnotation(projectResourceBuilder.Resource, configureOptions));
+        return builder.WithAnnotation(new ScalarAnnotation(projectResourceBuilder.Resource, configureOptions));
     }
 }

@@ -12,14 +12,14 @@ var scalar = builder.AddScalarApiReference(options =>
     options.WithTheme(ScalarTheme.Mars);
 }).WithHttpsEndpoint(port: 54678);
 
-scalar.WithReference(bookstore, options =>
-{
-    options.AddDocuments("v1", "v2");
-});
-
-scalar.WithReference(bookstoreTwo, options =>
-{
-    options.OpenApiRoutePattern = "swagger/{documentName}/swagger.json";
-});
+scalar
+    .WithReference(bookstore, options =>
+    {
+        options.AddDocuments("v1", "v2");
+    })
+    .WithReference(bookstoreTwo, options =>
+    {
+        options.OpenApiRoutePattern = "swagger/{documentName}/swagger.json";
+    });
 
 builder.Build().Run();
