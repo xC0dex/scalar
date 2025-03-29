@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using Yarp.ReverseProxy.Transforms;
 
 namespace Scalar.Aspire;
 
-internal sealed class ScalarHook(ResourceNotificationService notificationService, IServiceProvider serviceProvider, ResourceLoggerService resourceLoggerService) : IDistributedApplicationLifecycleHook, IAsyncDisposable
+internal sealed class ScalarHook(ResourceNotificationService notificationService, IServiceProvider serviceProvider) : IDistributedApplicationLifecycleHook, IAsyncDisposable
 {
     private WebApplication? _app;
     public ValueTask DisposeAsync() => _app?.DisposeAsync() ?? ValueTask.CompletedTask;
