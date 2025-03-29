@@ -121,9 +121,8 @@ public static class ScalarEndpointRouteBuilderExtensions
             var serializedConfiguration = JsonSerializer.Serialize(configuration, typeof(ScalarConfiguration), ScalarConfigurationSerializerContext.Default);
 
             UpdateTitleWithDocumentName(options);
-            var standaloneResourceUrl = GetScriptUrl(options.CdnUrl);
 
-            return GenerateContentResult(options, standaloneResourceUrl, httpContext.Request.Path, serializedConfiguration);
+            return GenerateContentResult(options, httpContext.Request.Path, serializedConfiguration);
         });
     }
 
@@ -155,13 +154,13 @@ public static class ScalarEndpointRouteBuilderExtensions
             var configurations = options.ToScalarConfigurations();
             var serializedConfigurations = JsonSerializer.Serialize(configurations, typeof(IEnumerable<ScalarConfiguration>), ScalarConfigurationSerializerContext.Default);
 
-            var standaloneResourceUrl = GetScriptUrl(endpointOptions.CdnUrl);
-
-            return GenerateContentResult(endpointOptions, standaloneResourceUrl, httpContext.Request.Path, serializedConfigurations);
+            return GenerateContentResult(endpointOptions, httpContext.Request.Path, serializedConfigurations);
         });
     }
 
-    // Helper method to support legacy options pattern
+    /// <summary>
+    /// Helper method to support the deprecated <see cref="ScalarOptions.EndpointPathPrefix"/> property.
+    /// </summary>
     private static IEndpointConventionBuilder MapScalarApiReferenceLegacy(IEndpointRouteBuilder endpoints, Action<ScalarOptions>? configureOptions = null)
     {
         // Support for obsolete `EndpointPathPrefix` property.
@@ -201,8 +200,10 @@ public static class ScalarEndpointRouteBuilderExtensions
 
     private static string GetScriptUrl(string? cdnUrl) => string.IsNullOrEmpty(cdnUrl) ? ScalarJavaScriptFile : cdnUrl;
 
-    private static IResult GenerateContentResult(IScalarEndpointOptions options, string resourceUrl, string requestPath, string configuration) =>
-        Results.Content(
+    private static IResult GenerateContentResult(IScalarEndpointOptions options, string requestPath, string configuration)
+    {
+        var scriptUrl = GetScriptUrl(options.CdnUrl);
+        return Results.Content(
             $$"""
               <!doctype html>
               <html>
@@ -216,7 +217,7 @@ public static class ScalarEndpointRouteBuilderExtensions
                   {{options.HeaderContent}}
                   <div id="app"></div>
                   <script type="module" src="{{ScalarJavaScriptHelperFile}}"></script>
-                  <script type="module" src="{{resourceUrl}}"></script>
+                  <script type="module" src="{{scriptUrl}}"></script>
                   <script type="module">
                       import { initialize } from './{{ScalarJavaScriptHelperFile}}'
                       initialize(
@@ -227,6 +228,7 @@ public static class ScalarEndpointRouteBuilderExtensions
               </body>
               </html>
               """, "text/html");
+    }
 
     /// <summary>
     /// Maps the endpoint for serving static assets.
