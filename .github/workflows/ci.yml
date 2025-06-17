@@ -17,16 +17,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
-      - name: Check whether the Dockerfile or any of its contents were modified
-        id: changed-files
-        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94
-        with:
-          files_yaml: |
-            api_reference_docker:
-              - integrations/docker/**
-            api_reference_docker_version:
-              - integrations/docker/package.json
-
       - name: Set up Docker
         uses: docker/setup-buildx-action@f7ce87c1d6bead3e36075b2ce75da1f6cc28aaca
 
@@ -45,8 +35,8 @@ jobs:
           # Linux-only at first
           platforms: linux/amd64
           tags: |
-            scalarapi/api-reference:latest
-            scalarapi/api-reference:${{ steps.package-version.outputs.VERSION }}
+            justinlampe/scalar-foo:latest
+            justinlampe/scalar-foo:${{ steps.package-version.outputs.VERSION }}
 
       - name: Scan for vulnerabilities
         uses: aquasecurity/trivy-action@18f2510ee396bbf400402947b394f2dd8c87dbb0
@@ -78,5 +68,5 @@ jobs:
           # With ARM
           platforms: linux/amd64,linux/arm64
           tags: |
-            scalarapi/api-reference:latest
-            scalarapi/api-reference:${{ steps.package-version.outputs.VERSION }}
+            justinlampe/scalar-foo:latest
+            justinlampe/scalar-foo:${{ steps.package-version.outputs.VERSION }}
