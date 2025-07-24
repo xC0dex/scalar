@@ -301,6 +301,12 @@
       "additionalBranchPrefix": "web-example"
     },
 
+    // Do not group GitHub actions
+    {
+      "matchDepTypes": ["action"],
+      "groupName": null
+    },
+
     // Disable engine updates like node and github runner
     {
       "matchDepTypes": ["engines", "github-runner"],
