@@ -183,8 +183,14 @@
 
     // Global dependencies
     {
-      "matchFileNames": ["package.json", "pnpm-workspace.yml"],
+      "matchFileNames": ["package.json", "pnpm-workspace.yaml"],
       "additionalBranchPrefix": "global"
+    },
+
+    // Tooling
+    {
+      "matchFileNames": ["tooling/**"],
+      "additionalBranchPrefix": "tooling"
     },
 
     // Integrations
@@ -279,9 +285,9 @@
       "additionalBranchPrefix": "web-example"
     },
 
-    // Disable engine updates like node or pnpm
+    // Disable engine updates like node and github runner
     {
-      "matchDepTypes": ["engines"],
+      "matchDepTypes": ["engines", "github-runner"],
       "enabled": false
     },
 
