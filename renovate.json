@@ -37,6 +37,20 @@
       "enabled": false
     },
     {
+      "matchFileNames": ["*"],
+      "enabled": false
+    },
+    {
+      "description": "Enable for packages folder",
+      "matchFileNames": ["packages/**/package.json"],
+      "enabled": true
+    },
+    {
+      "description": "",
+      "matchFileNames": ["packages/**/package.json"],
+      "separateMinorPatch": true
+    },
+    {
       "description": "Group patch updates for each package",
       "matchUpdateTypes": ["patch"],
       "matchFileNames": ["packages/**/package.json"],
@@ -49,6 +63,13 @@
       "matchFileNames": ["packages/**/package.json"],
       "groupName": "minor dependency update ({{{parentDir}}}): {{{depName}}}",
       "groupSlug": "minor-{{{parentDir}}}-{{{depName}}}"
+    },
+    {
+      "description": "Separate major updates for each package",
+      "matchUpdateTypes": ["major"],
+      "matchFileNames": ["packages/**/package.json"],
+      "groupName": "major dependency update ({{{parentDir}}}): {{{depName}}}",
+      "groupSlug": "major-{{{parentDir}}}-{{{depName}}}"
     }
   ]
 }
