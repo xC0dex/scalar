@@ -277,6 +277,12 @@
       "additionalBranchPrefix": "playwright"
     },
 
+    // Scripts
+    {
+      "matchFileNames": ["scripts/**"],
+      "additionalBranchPrefix": "scripts-root"
+    },
+
     // Examples without corresponding integrations
     {
       "matchFileNames": ["examples/cdn-api-reference/**"],
