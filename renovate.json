@@ -27,7 +27,7 @@
       "groupName": "dependencies"
     },
     {
-      "matchFileNames": ["packages/**", "package.json", "pnpm-workspace.yml", "integrations/**"],
+      "matchFileNames": ["packages/**", "package.json", "pnpm-workspace.yml", "integrations/**", "examples/**"],
       "commitMessagePrefix": "chore({{{additionalBranchPrefix}}}):",
       "enabled": true
     },
@@ -198,11 +198,11 @@
       "additionalBranchPrefix": "docker-integration"
     },
     {
-      "matchFileNames": ["integrations/docusaurus/**"],
+      "matchFileNames": ["integrations/docusaurus/**", "examples/docusaurus/**"],
       "additionalBranchPrefix": "docusaurus-integration"
     },
     {
-      "matchFileNames": ["integrations/express/**"],
+      "matchFileNames": ["integrations/express/**", "examples/express/**"],
       "additionalBranchPrefix": "express-integration"
     },
     {
@@ -210,7 +210,7 @@
       "additionalBranchPrefix": "fastapi-integration"
     },
     {
-      "matchFileNames": ["integrations/fastify/**"],
+      "matchFileNames": ["integrations/fastify/**", "examples/fastify/**"],
       "additionalBranchPrefix": "fastify-integration"
     },
     {
@@ -218,20 +218,38 @@
       "additionalBranchPrefix": "hono-integration"
     },
     {
-      "matchFileNames": ["integrations/nestjs/**"],
+      "matchFileNames": ["integrations/nestjs/**", "examples/nestjs/**"],
       "additionalBranchPrefix": "nestjs-integration"
     },
     {
-      "matchFileNames": ["integrations/nextjs/**"],
+      "matchFileNames": ["integrations/nextjs/**", "examples/nextjs-api-reference/**"],
       "additionalBranchPrefix": "nextjs-integration"
     },
     {
-      "matchFileNames": ["integrations/nuxt/**"],
+      "matchFileNames": ["integrations/nuxt/**", "examples/nuxt/**"],
       "additionalBranchPrefix": "nuxt-integration"
     },
     {
-      "matchFileNames": ["integrations/sveltekit/**"],
+      "matchFileNames": ["integrations/sveltekit/**", "examples/sveltekit/**"],
       "additionalBranchPrefix": "sveltekit-integration"
+    },
+
+    // Examples without corresponding integrations
+    {
+      "matchFileNames": ["examples/cdn-api-reference/**"],
+      "additionalBranchPrefix": "api-reference-example"
+    },
+    {
+      "matchFileNames": ["examples/react/**", "examples/react-webpack/**"],
+      "additionalBranchPrefix": "react-example"
+    },
+    {
+      "matchFileNames": ["examples/ssg/**"],
+      "additionalBranchPrefix": "ssg-example"
+    },
+    {
+      "matchFileNames": ["examples/web/**"],
+      "additionalBranchPrefix": "web-example"
     },
 
     // Disable engine updates like node or pnpm
