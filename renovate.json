@@ -33,7 +33,8 @@
         "pnpm-workspace.yml",
         "integrations/**",
         "examples/**",
-        "projects/**"
+        "projects/**",
+        "playwright/**"
       ],
       "commitMessagePrefix": "chore({{{additionalBranchPrefix}}}):"
     },
