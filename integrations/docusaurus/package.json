@@ -41,12 +41,12 @@
     "@scalar/types": "workspace:*"
   },
   "devDependencies": {
-    "@docusaurus/types": "^3.7.0",
+    "@docusaurus/types": "^3.8.1",
     "@types/react": "catalog:*",
     "@types/react-dom": "catalog:*",
     "path": "^0.12.7",
     "postcss": "catalog:*",
-    "postcss-cli": "^11.0.0",
+    "postcss-cli": "^11.0.1",
     "postcss-nesting": "^12.1.5",
     "react": "catalog:*",
     "shx": "^0.4.0"
