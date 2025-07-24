@@ -46,7 +46,7 @@
     {
       "description": "Separate minor updates for each package",
       "matchUpdateTypes": ["minor"],
-      "matchFileNames": ["packages/*/package.json"],
+      "matchFileNames": ["packages/**/package.json"],
       "groupName": "minor dependency update ({{{parentDir}}}): {{{depName}}}",
       "groupSlug": "minor-{{{parentDir}}}-{{{depName}}}"
     }
