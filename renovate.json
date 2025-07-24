@@ -53,9 +53,16 @@
     {
       "description": "",
       "matchFileNames": ["packages/**/package.json"],
-      "matchUpdateTypes": ["patch"],
+      "matchUpdateTypes": ["patch", "minor"],
       "matchPackageNames": ["*"],
-      "groupName": "all patch dependencies"
+      "groupName": "all minor-patch dependencies"
+    },
+    {
+      "description": "",
+      "matchFileNames": ["packages/**/package.json"],
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": ["*"],
+      "groupName": "all major dependencies"
     },
     {
       "matchFileNames": ["packages/**/package.json"],
