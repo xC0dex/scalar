@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN pnpm --filter @scalar-examples/galaxy build
 
-FROM node:20-bullseye-slim AS runner
+FROM node:22.17.1-bullseye-slim AS runner
 COPY --from=builder /usr/bin/dumb-init /usr/bin/dumb-init
 
 ENV NODE_ENV=production
