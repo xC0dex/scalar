@@ -581,7 +581,7 @@ jobs:
         run: pnpm compress
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@3951f0dfe7a07e2313ec93c75700083e2005cbab #4.3.0
+        uses: actions/setup-dotnet@v4.3.0
         with:
           dotnet-version: |
             9.x
@@ -618,7 +618,7 @@ jobs:
         run: pnpm copy:standalone
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@3951f0dfe7a07e2313ec93c75700083e2005cbab #4.3.0
+        uses: actions/setup-dotnet@v4.3.0
         with:
           dotnet-version: |
             9.x
@@ -699,7 +699,7 @@ jobs:
 
       - if: steps.changed-files.outputs.aspnetcore_package_any_changed == 'true'
         name: Setup .NET
-        uses: actions/setup-dotnet@3951f0dfe7a07e2313ec93c75700083e2005cbab #4.3.0
+        uses: actions/setup-dotnet@v4.3.0
         with:
           dotnet-version: |
             9.x
@@ -813,7 +813,7 @@ jobs:
 
       - if: steps.changed-files.outputs.aspire_package_any_changed == 'true'
         name: Setup .NET
-        uses: actions/setup-dotnet@3951f0dfe7a07e2313ec93c75700083e2005cbab #4.3.0
+        uses: actions/setup-dotnet@v4.3.0
         with:
           dotnet-version: |
             9.x
