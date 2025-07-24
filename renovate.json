@@ -32,6 +32,23 @@
       "matchPackageNames": ["Microsoft.AspNetCore**"],
       "matchUpdateTypes": ["major"],
       "enabled": false
+    },
+
+    {
+      "description": "Group patch updates for each package",
+      "matchUpdateTypes": ["patch"],
+      "matchFileNames": ["packages/**/package.json"],
+      "groupName": "patch dependencies ({{{parentDir}}})",
+      "groupSlug": "patch-{{{parentDir}}}",
+      "separateMinorPatch": false
+    },
+    {
+      "description": "Separate minor updates for each package",
+      "matchUpdateTypes": ["minor"],
+      "matchPaths": ["packages/*/package.json"],
+      "groupName": "minor dependency update ({{{parentDir}}}): {{{depName}}}",
+      "groupSlug": "minor-{{{parentDir}}}-{{{depName}}}",
+      "separateMinorPatch": true
     }
   ]
 }
