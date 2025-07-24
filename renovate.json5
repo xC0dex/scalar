@@ -1,0 +1,104 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: ['config:recommended', ':dependencyDashboardApproval'],
+  prConcurrentLimit: 0,
+  labels: ['dependencies'],
+  forkProcessing: 'enabled',
+  rangeStrategy: 'bump',
+  vulnerabilityAlerts: {
+    rangeStrategy: 'bump',
+  },
+  packageRules: [
+    {
+      description: 'Keep these package as low as possible for best compatibility',
+      matchFileNames: ['**/Scalar.AspNetCore.*.csproj'],
+      matchPackageNames: [
+        'Microsoft.AspNetCore.OpenApi',
+        'Swashbuckle.AspNetCore.SwaggerGen',
+      ],
+      enabled: false,
+    },
+    {
+      description: 'Disable patch updates for Aspire.Hosting for best compatibility',
+      matchFileNames: ['**/Scalar.Aspire.csproj'],
+      matchPackageNames: ['Aspire.Hosting'],
+      matchUpdateTypes: ['patch'],
+      enabled: false,
+    },
+    {
+      description: 'Disable .NET SDK updates',
+      matchFileNames: ['**/global.json'],
+      enabled: false,
+    },
+    {
+      description: 'Disable major updates for Microsoft.AspNetCore packages. We will manually update these after each .NET release.',
+      matchPackageNames: ['Microsoft.AspNetCore**'],
+      matchUpdateTypes: ['major'],
+      enabled: false,
+    },
+
+    {
+      matchPackageNames: ['**'],
+      enabled: false,
+    },
+    {
+      description: 'Group all major dependencies',
+      matchUpdateTypes: ['major'],
+      matchPackageNames: ['*'],
+      groupName: 'major dependencies',
+    },
+    {
+      description: 'Group all minor patch dependencies',
+      matchUpdateTypes: ['patch', 'minor'],
+      matchPackageNames: ['*'],
+      groupName: 'minor-patch dependencies',
+    },
+    {
+      matchFileNames: ['packages/**'],
+      commitMessagePrefix: 'chore({{{additionalBranchPrefix}}})',
+      enabled: true,
+    },
+    {
+      matchFileNames: ['packages/api-client/**'],
+      additionalBranchPrefix: 'api-client',
+    },
+    {
+      matchDepTypes: ['engines'],
+      enabled: false,
+    },
+    // {
+    //   "matchFileNames": ["packages/**/package.json"],
+    //   "additionalBranchPrefix": "{{{parentDir}}}-",
+    //   "commitMessagePrefix": "{{{parentDir}}}({{{updateType}}}):"
+    // },
+    // {
+    //   "description": "Enable for packages folder",
+    //   "matchFileNames": ["packages/**/package.json"],
+    //   "enabled": true
+    // },
+    // {
+    //   "description": "",
+    //   "matchFileNames": ["packages/**/package.json"],
+    //   "separateMinorPatch": true
+    // },
+    // {
+    //   "description": "",
+    //   "matchFileNames": ["packages/**/package.json"],
+    //   "matchUpdateTypes": ["patch", "minor"],
+    //   "matchPackageNames": ["*"],
+    //   "groupName": "all minor-patch dependencies"
+    // },
+    // {
+    //   "description": "",
+    //   "matchFileNames": ["packages/**/package.json"],
+    //   "matchUpdateTypes": ["major"],
+    //   "matchPackageNames": ["*"],
+    //   "groupName": "all major dependencies"
+    // },
+    // {
+    //   "matchFileNames": ["packages/**/package.json"],
+    //   "additionalBranchPrefix": "{{{parentDir}}}-",
+    //   "commitMessagePrefix": "{{{parentDir}}}({{{updateType}}}):"
+    // },
+  ],
+}
