@@ -27,7 +27,14 @@
       "groupName": "dependencies"
     },
     {
-      "matchFileNames": ["packages/**", "package.json", "pnpm-workspace.yml", "integrations/**", "examples/**"],
+      "matchFileNames": [
+        "packages/**",
+        "package.json",
+        "pnpm-workspace.yml",
+        "integrations/**",
+        "examples/**",
+        "projects/**"
+      ],
       "commitMessagePrefix": "chore({{{additionalBranchPrefix}}}):"
     },
 
