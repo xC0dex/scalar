@@ -12,10 +12,7 @@
     {
       "description": "Keep these package as low as possible for best compatibility",
       "matchFileNames": ["**/Scalar.AspNetCore.*.csproj"],
-      "matchPackageNames": [
-        "Microsoft.AspNetCore.OpenApi",
-        "Swashbuckle.AspNetCore.SwaggerGen"
-      ],
+      "matchPackageNames": ["Microsoft.AspNetCore.OpenApi", "Swashbuckle.AspNetCore.SwaggerGen"],
       "enabled": false
     },
     {
@@ -54,10 +51,12 @@
       "groupName": "dependencies"
     },
     {
-      "matchFileNames": ["packages/**", "package.json", "pnpm-workspace.yml"],
+      "matchFileNames": ["packages/**", "package.json", "pnpm-workspace.yml", "integrations/**"],
       "commitMessagePrefix": "chore({{{additionalBranchPrefix}}}):",
       "enabled": true
     },
+
+    // Packages
     {
       "matchFileNames": ["packages/api-client/**"],
       "additionalBranchPrefix": "api-client"
@@ -199,11 +198,67 @@
       "additionalBranchPrefix": "workspace-store"
     },
 
+    // Global dependencies
     {
       "matchFileNames": ["package.json", "pnpm-workspace.yml"],
-      "additionalBranchPrefix": "root"
+      "additionalBranchPrefix": "global"
     },
 
+    // Integrations
+    {
+      "matchFileNames": ["integrations/aspire/**"],
+      "additionalBranchPrefix": "aspire-integration"
+    },
+    {
+      "matchFileNames": ["integrations/aspnetcore/**"],
+      "additionalBranchPrefix": "aspnetcore-integration"
+    },
+    {
+      "matchFileNames": ["integrations/django-ninja/**"],
+      "additionalBranchPrefix": "django-ninja-integration"
+    },
+    {
+      "matchFileNames": ["integrations/docker/**"],
+      "additionalBranchPrefix": "docker-integration"
+    },
+    {
+      "matchFileNames": ["integrations/docusaurus/**"],
+      "additionalBranchPrefix": "docusaurus-integration"
+    },
+    {
+      "matchFileNames": ["integrations/express/**"],
+      "additionalBranchPrefix": "express-integration"
+    },
+    {
+      "matchFileNames": ["integrations/fastapi/**"],
+      "additionalBranchPrefix": "fastapi-integration"
+    },
+    {
+      "matchFileNames": ["integrations/fastify/**"],
+      "additionalBranchPrefix": "fastify-integration"
+    },
+    {
+      "matchFileNames": ["integrations/hono/**"],
+      "additionalBranchPrefix": "hono-integration"
+    },
+    {
+      "matchFileNames": ["integrations/nestjs/**"],
+      "additionalBranchPrefix": "nestjs-integration"
+    },
+    {
+      "matchFileNames": ["integrations/nextjs/**"],
+      "additionalBranchPrefix": "nextjs-integration"
+    },
+    {
+      "matchFileNames": ["integrations/nuxt/**"],
+      "additionalBranchPrefix": "nuxt-integration"
+    },
+    {
+      "matchFileNames": ["integrations/sveltekit/**"],
+      "additionalBranchPrefix": "sveltekit-integration"
+    },
+
+    // Disable engine updates like node or pnpm
     {
       "matchDepTypes": ["engines"],
       "enabled": false
