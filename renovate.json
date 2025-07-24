@@ -206,14 +206,7 @@
 
     {
       "matchDepTypes": ["engines"],
-      "matchDepNames": ["node"],
-      "additionalBranchPrefix": "node"
-    },
-
-    {
-      "matchDepTypes": ["engines"],
-      "matchDepNames": ["pnpm"],
-      "additionalBranchPrefix": "pnpm"
+      "enabled": false
     }
     // {
     //   "matchFileNames": ["packages/**/package.json"],
