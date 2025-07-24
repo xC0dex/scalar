@@ -61,6 +61,12 @@
       "matchFileNames": ["packages/**/package.json"],
       "additionalBranchPrefix": "{{{parentDir}}}-",
       "commitMessagePrefix": "{{{parentDir}}}:"
+    },
+    {
+      "matchDepTypes": [
+        "engines"
+      ],
+      "enabled": false
     }
   ]
 }
