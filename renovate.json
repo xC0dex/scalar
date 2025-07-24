@@ -38,7 +38,7 @@
         "playwright/**",
         "tooling/**"
       ],
-      "commitMessagePrefix": "chore({{{additionalBranchPrefix}}}):"
+      "semanticCommitScope": "{{{additionalBranchPrefix}}}"
     },
 
     // Packages
