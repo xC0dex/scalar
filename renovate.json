@@ -3,7 +3,7 @@
   "extends": ["config:recommended", ":dependencyDashboardApproval"],
   "prConcurrentLimit": 0,
   "labels": ["dependencies"],
-  "forkProcessing": true,
+  "forkProcessing": "enabled",
   "rangeStrategy": "bump",
   "vulnerabilityAlerts": {
     "rangeStrategy": "bump"
