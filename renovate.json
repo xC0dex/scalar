@@ -9,11 +9,11 @@
     "rangeStrategy": "bump"
   },
   "packageRules": [
-    {
-      "description": "Disable all by default",
-      "matchPackageNames": ["**"],
-      "enabled": false
-    },
+    // {
+    //   "description": "Disable all by default",
+    //   "matchPackageNames": ["**"],
+    //   "enabled": false
+    // },
     {
       "description": "Group all major dependencies",
       "matchUpdateTypes": ["major"],
@@ -28,8 +28,7 @@
     },
     {
       "matchFileNames": ["packages/**", "package.json", "pnpm-workspace.yml", "integrations/**", "examples/**"],
-      "commitMessagePrefix": "chore({{{additionalBranchPrefix}}}):",
-      "enabled": true
+      "commitMessagePrefix": "chore({{{additionalBranchPrefix}}}):"
     },
 
     // Packages
@@ -232,6 +231,26 @@
     {
       "matchFileNames": ["integrations/sveltekit/**", "examples/sveltekit/**"],
       "additionalBranchPrefix": "sveltekit-integration"
+    },
+
+    // Projects
+    {
+      "matchFileNames": ["projects/client-scalar-com/**"],
+      "additionalBranchPrefix": "client-scalar-com"
+    },
+    {
+      "matchFileNames": ["projects/proxy-scalar-com/**"],
+      "additionalBranchPrefix": "proxy-scalar-com"
+    },
+    {
+      "matchFileNames": ["projects/scalar-app/**"],
+      "additionalBranchPrefix": "scalar-app"
+    },
+
+    // Playwright
+    {
+      "matchFileNames": ["playwright/**"],
+      "additionalBranchPrefix": "playwright"
     },
 
     // Examples without corresponding integrations
