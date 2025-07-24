@@ -244,7 +244,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@09d2acae674a48949e3602304ab46fd20ae0c42f
       - name: Setup Go
-        uses: actions/setup-go@fa96338abe5531f6e34c5cc0bbe28c1a533d5505
+        uses: actions/setup-go@8e57b58e57be52ac95949151e2777ffda8501267
         with:
           go-version: ${{ matrix.go-version }}
       - name: Run tests for the proxy server (Go)
