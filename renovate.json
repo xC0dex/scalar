@@ -67,7 +67,7 @@
     {
       "matchFileNames": ["packages/**/package.json"],
       "additionalBranchPrefix": "{{{parentDir}}}-",
-      "commitMessagePrefix": "{{{parentDir}}}:"
+      "commitMessagePrefix": "{{{parentDir}}}({{{updateType}}}):"
     },
     {
       "matchDepTypes": [
