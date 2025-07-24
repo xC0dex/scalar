@@ -37,6 +37,7 @@
       "enabled": false
     },
     {
+      "description": "Disable all by default",
       "matchPackageNames": ["**"],
       "enabled": false
     },
@@ -47,10 +48,10 @@
       "groupName": "major dependencies"
     },
     {
-      "description": "Group all minor patch dependencies",
+      "description": "Group all minor and patch dependencies",
       "matchUpdateTypes": ["patch", "minor"],
       "matchPackageNames": ["*"],
-      "groupName": "minor-patch dependencies"
+      "groupName": "dependencies"
     },
     {
       "matchFileNames": ["packages/**"],
@@ -197,9 +198,22 @@
       "matchFileNames": ["packages/workspace-store/**"],
       "additionalBranchPrefix": "workspace-store"
     },
+
+    {
+      "matchFileNames": ["package.json", "pnpm-workspace.yml"],
+      "additionalBranchPrefix": "root"
+    },
+
     {
       "matchDepTypes": ["engines"],
-      "enabled": false
+      "matchDepNames": ["node"],
+      "additionalBranchPrefix": "node"
+    },
+
+    {
+      "matchDepTypes": ["engines"],
+      "matchDepNames": ["pnpm"],
+      "additionalBranchPrefix": "pnpm"
     }
     // {
     //   "matchFileNames": ["packages/**/package.json"],
