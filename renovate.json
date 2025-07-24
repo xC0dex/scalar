@@ -307,9 +307,11 @@
       "groupName": null
     },
 
-    // Disable engine updates like node and github runner
+    // Disable engine updates like node
+    // Disable github runner
+    // Disable uses-with
     {
-      "matchDepTypes": ["engines", "github-runner"],
+      "matchDepTypes": ["engines", "github-runner", "uses-with"],
       "enabled": false
     },
 
