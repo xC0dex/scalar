@@ -35,12 +35,17 @@
         "integrations/**",
         "examples/**",
         "projects/**",
-        "playwright/**"
+        "playwright/**",
+        "tooling/**"
       ],
       "commitMessagePrefix": "chore({{{additionalBranchPrefix}}}):"
     },
 
     // Packages
+    {
+      "matchFileNames": ["packages/**"],
+      "labels": ["package"]
+    },
     {
       "matchFileNames": ["packages/api-client/**"],
       "additionalBranchPrefix": "api-client"
@@ -196,56 +201,60 @@
 
     // Integrations
     {
+      "matchFileNames": ["integrations/**"],
+      "labels": ["integration"]
+    },
+    {
       "matchFileNames": ["integrations/aspire/**"],
-      "additionalBranchPrefix": "aspire-integration"
+      "additionalBranchPrefix": "aspire"
     },
     {
       "matchFileNames": ["integrations/aspnetcore/**"],
-      "additionalBranchPrefix": "aspnetcore-integration"
+      "additionalBranchPrefix": "aspnetcore"
     },
     {
       "matchFileNames": ["integrations/django-ninja/**"],
-      "additionalBranchPrefix": "django-ninja-integration"
+      "additionalBranchPrefix": "django-ninja"
     },
     {
       "matchFileNames": ["integrations/docker/**"],
-      "additionalBranchPrefix": "docker-integration"
+      "additionalBranchPrefix": "docker"
     },
     {
       "matchFileNames": ["integrations/docusaurus/**", "examples/docusaurus/**"],
-      "additionalBranchPrefix": "docusaurus-integration"
+      "additionalBranchPrefix": "docusaurus"
     },
     {
       "matchFileNames": ["integrations/express/**", "examples/express/**"],
-      "additionalBranchPrefix": "express-integration"
+      "additionalBranchPrefix": "express"
     },
     {
       "matchFileNames": ["integrations/fastapi/**"],
-      "additionalBranchPrefix": "fastapi-integration"
+      "additionalBranchPrefix": "fastapi"
     },
     {
       "matchFileNames": ["integrations/fastify/**", "examples/fastify/**"],
-      "additionalBranchPrefix": "fastify-integration"
+      "additionalBranchPrefix": "fastify"
     },
     {
       "matchFileNames": ["integrations/hono/**"],
-      "additionalBranchPrefix": "hono-integration"
+      "additionalBranchPrefix": "hono"
     },
     {
       "matchFileNames": ["integrations/nestjs/**", "examples/nestjs/**"],
-      "additionalBranchPrefix": "nestjs-integration"
+      "additionalBranchPrefix": "nestjs"
     },
     {
       "matchFileNames": ["integrations/nextjs/**", "examples/nextjs-api-reference/**"],
-      "additionalBranchPrefix": "nextjs-integration"
+      "additionalBranchPrefix": "nextjs"
     },
     {
       "matchFileNames": ["integrations/nuxt/**", "examples/nuxt/**"],
-      "additionalBranchPrefix": "nuxt-integration"
+      "additionalBranchPrefix": "nuxt"
     },
     {
       "matchFileNames": ["integrations/sveltekit/**", "examples/sveltekit/**"],
-      "additionalBranchPrefix": "sveltekit-integration"
+      "additionalBranchPrefix": "sveltekit"
     },
 
     // Projects
