@@ -38,7 +38,8 @@
         "tooling/**"
       ],
       "semanticCommits": "enabled",
-      "semanticCommitScope": "{{{additionalBranchPrefix}}}"
+      "semanticCommitScope": "{{{additionalBranchPrefix}}}",
+      "semanticCommitType": "chore"
     },
 
     // Packages
