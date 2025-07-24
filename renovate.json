@@ -12,7 +12,10 @@
     {
       "description": "Keep these package as low as possible for best compatibility",
       "matchFileNames": ["**/Scalar.AspNetCore.*.csproj"],
-      "matchPackageNames": ["Microsoft.AspNetCore.OpenApi", "Swashbuckle.AspNetCore.SwaggerGen"],
+      "matchPackageNames": [
+        "Microsoft.AspNetCore.OpenApi",
+        "Swashbuckle.AspNetCore.SwaggerGen"
+      ],
       "enabled": false
     },
     {
@@ -33,7 +36,6 @@
       "matchUpdateTypes": ["major"],
       "enabled": false
     },
-
     {
       "description": "Group patch updates for each package",
       "matchUpdateTypes": ["patch"],
@@ -44,7 +46,7 @@
     {
       "description": "Separate minor updates for each package",
       "matchUpdateTypes": ["minor"],
-      "matchPaths": ["packages/*/package.json"],
+      "matchFileNames": ["packages/**/package.json"],
       "groupName": "minor dependency update ({{{parentDir}}}): {{{depName}}}",
       "groupSlug": "minor-{{{parentDir}}}-{{{depName}}}"
     }
