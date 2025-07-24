@@ -5,28 +5,27 @@
   "prHourlyLimit": 0,
   "labels": ["dependencies"],
   "forkProcessing": "enabled",
+  "semanticCommits": "enabled",
   "rangeStrategy": "bump",
   "vulnerabilityAlerts": {
     "rangeStrategy": "bump"
   },
   "packageRules": [
-    // {
-    //   "description": "Disable all by default",
-    //   "matchPackageNames": ["**"],
-    //   "enabled": false
-    // },
+    // Group major dependencies
     {
-      "description": "Group all major dependencies",
       "matchUpdateTypes": ["major"],
       "matchPackageNames": ["*"],
       "groupName": "major dependencies"
     },
+
+    // group minor and patch dependencies
     {
-      "description": "Group all minor and patch dependencies",
       "matchUpdateTypes": ["patch", "minor"],
       "matchPackageNames": ["*"],
       "groupName": "dependencies"
     },
+
+    // Update commit prefix for separate scope
     {
       "matchFileNames": [
         "packages/**",
@@ -38,6 +37,7 @@
         "playwright/**",
         "tooling/**"
       ],
+      "semanticCommits": "enabled",
       "semanticCommitScope": "{{{additionalBranchPrefix}}}"
     },
 
@@ -46,6 +46,8 @@
       "matchFileNames": ["packages/**"],
       "labels": ["package"]
     },
+
+    // Packages
     {
       "matchFileNames": ["packages/api-client/**"],
       "additionalBranchPrefix": "api-client"
@@ -204,6 +206,8 @@
       "matchFileNames": ["integrations/**"],
       "labels": ["integration"]
     },
+
+    // Integrations
     {
       "matchFileNames": ["integrations/aspire/**"],
       "additionalBranchPrefix": "aspire"
