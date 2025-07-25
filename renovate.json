@@ -48,6 +48,11 @@
       "labels": ["package"]
     },
 
+    {
+      "matchDepTypes": ["action"],
+      "dependencyDashboardApproval": false
+    },
+
     // Packages
     {
       "matchFileNames": ["packages/api-client/**"],
