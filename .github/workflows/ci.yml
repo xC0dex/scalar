@@ -53,7 +53,7 @@ jobs:
 
       - name: Check whether the Dockerfile or any of its contents were modified
         id: changed-files
-        uses: step-security/changed-files@v46
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94 # v46
         with:
           files_yaml: |
             api_reference_docker:
@@ -362,7 +362,7 @@ jobs:
       - if: startsWith(github.event.head_commit.message, 'RELEASING:')
         name: Check whether there's a new version of the app
         id: changed-files
-        uses: step-security/changed-files@v46
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94 # v46
         with:
           files_yaml: |
             api_client_app:
@@ -391,7 +391,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Check which files were touched
         id: changed-files
-        uses: step-security/changed-files@v46
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94 # v46
         with:
           files_yaml: |
             api_client:
@@ -430,7 +430,7 @@ jobs:
       - if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:')
         name: Check for new @scalar/api-client version
         id: client-version
-        uses: step-security/changed-files@v46
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94 # v46
         with:
           files_yaml: |
             api_client:
@@ -511,7 +511,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Check which files were touched
         id: changed-files
-        uses: step-security/changed-files@v46
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94 # v46
         with:
           files_yaml: |
             components:
@@ -667,7 +667,7 @@ jobs:
 
       - name: Check for new NuGet package version
         id: changed-files
-        uses: step-security/changed-files@v46
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94 # v46
         with:
           files_yaml: |
             aspnetcore_package:
@@ -753,7 +753,7 @@ jobs:
 
       - name: Check for Aspire package.json changes
         id: changed-files
-        uses: step-security/changed-files@v46
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94 # v46
         with:
           files_yaml: |
             aspire_package:
@@ -884,7 +884,7 @@ jobs:
 
       - name: Check for FastAPI integration changes
         id: changed-files
-        uses: step-security/changed-files@v46
+        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94 # v46
         with:
           files_yaml: |
             fastapi_integration:
