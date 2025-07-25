@@ -406,7 +406,7 @@ jobs:
       - if: steps.changed-files.outputs.api_client_any_changed == 'true'
         name: Deploy to client.staging.scalar.com (staging)
         id: deploy-client-staging
-        uses: cloudflare/wrangler-action@7a5f8bbdfeedcde38e6777a50fe685f89259d4ca
+        uses: cloudflare/wrangler-action@v3
         with:
           command: pages deploy dist --project-name=client-staging
           workingDirectory: projects/client-scalar-com
@@ -420,7 +420,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - if: github.ref != 'refs/heads/main' && steps.deploy-client-staging.outputs.deployment-url
         name: Add Cloudflare Preview URL to the PR
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
+        uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
             **Cloudflare Preview for the API Client**
@@ -438,7 +438,7 @@ jobs:
       - if: steps.client-version.outputs.api_client_any_changed == 'true'
         name: Deploy to client.scalar.com (production)
         id: deploy-client-production
-        uses: cloudflare/wrangler-action@7a5f8bbdfeedcde38e6777a50fe685f89259d4ca
+        uses: cloudflare/wrangler-action@v3
         with:
           command: pages deploy dist --project-name=client
           workingDirectory: projects/client-scalar-com
@@ -489,7 +489,7 @@ jobs:
             --alias=${{env.DEPLOY_ID}}
       - name: Add Netlify Preview URL to the PR
         if: github.event_name == 'pull_request'
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
+        uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
             **Preview Examples**
@@ -550,7 +550,7 @@ jobs:
 
       - if: steps.changed-files.outputs.components_any_changed == 'true'
         name: Add Netlify Preview URL to the PR
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
+        uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
             **Preview Storybook**
@@ -581,7 +581,7 @@ jobs:
         run: pnpm compress
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@0f55b457d2a9ef0a7d0c7a2dd7cac6b1647730a4
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             9.x
@@ -618,7 +618,7 @@ jobs:
         run: pnpm copy:standalone
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@0f55b457d2a9ef0a7d0c7a2dd7cac6b1647730a4
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             9.x
@@ -699,7 +699,7 @@ jobs:
 
       - if: steps.changed-files.outputs.aspnetcore_package_any_changed == 'true'
         name: Setup .NET
-        uses: actions/setup-dotnet@0f55b457d2a9ef0a7d0c7a2dd7cac6b1647730a4
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             9.x
@@ -813,7 +813,7 @@ jobs:
 
       - if: steps.changed-files.outputs.aspire_package_any_changed == 'true'
         name: Setup .NET
-        uses: actions/setup-dotnet@0f55b457d2a9ef0a7d0c7a2dd7cac6b1647730a4
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             9.x
@@ -842,7 +842,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@532b046aaf352bab5717122cc0ea52b7f12266a3
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -892,7 +892,7 @@ jobs:
 
       - if: steps.changed-files.outputs.fastapi_integration_any_changed == 'true'
         name: Setup Python
-        uses: actions/setup-python@532b046aaf352bab5717122cc0ea52b7f12266a3
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 

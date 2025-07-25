@@ -40,7 +40,7 @@ jobs:
       - name: Run E2E tests (jsdelivr)
         run: |
           CI=1 pnpm test:e2e:jsdelivr
-      - uses: actions/upload-artifact@de65e23aa2b7e23d713bb51fbfcb6d502f8667d8
+      - uses: actions/upload-artifact@v4
         id: artifact-upload
         if: ${{ failure() }}
         with:
@@ -52,7 +52,7 @@ jobs:
         run: pnpm vite-node scripts/update-snapshots.ts
       - name: Create Pull Request
         if: ${{ failure() && github.event_name != 'pull_request' }}
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e
+        uses: peter-evans/create-pull-request@v7
         with:
           commit-message: 'test: update CDN API Reference snapshots'
           body: |
@@ -65,7 +65,7 @@ jobs:
           delete-branch: true
           reviewers: amritk, antlio, cameronrohani, geoffgscott, hanspagel, marclave
       - name: Comment on PR with report link
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
+        uses: thollander/actions-comment-pull-request@v3
         if: ${{ failure() && github.event_name == 'pull_request'}}
         with:
           message: |
