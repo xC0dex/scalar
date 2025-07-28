@@ -331,7 +331,7 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - name: Bust CDN cache
-        uses: fjogeleit/http-request-action@v1.16.4
+        uses: fjogeleit/http-request-action@23ad54bcd1178fcff6a0d17538fa09de3a7f0a4d # v1.16.4
         with:
           url: 'https://purge.jsdelivr.net/npm/@scalar/api-reference'
           method: 'GET'
