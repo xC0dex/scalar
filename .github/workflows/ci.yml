@@ -420,7 +420,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - if: github.ref != 'refs/heads/main' && steps.deploy-client-staging.outputs.deployment-url
         name: Add Cloudflare Preview URL to the PR
-        uses: thollander/actions-comment-pull-request@v3
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         with:
           message: |
             **Cloudflare Preview for the API Client**
@@ -489,7 +489,7 @@ jobs:
             --alias=${{env.DEPLOY_ID}}
       - name: Add Netlify Preview URL to the PR
         if: github.event_name == 'pull_request'
-        uses: thollander/actions-comment-pull-request@v3
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         with:
           message: |
             **Preview Examples**
@@ -550,7 +550,7 @@ jobs:
 
       - if: steps.changed-files.outputs.components_any_changed == 'true'
         name: Add Netlify Preview URL to the PR
-        uses: thollander/actions-comment-pull-request@v3
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         with:
           message: |
             **Preview Storybook**
