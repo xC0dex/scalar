@@ -19,7 +19,7 @@ jobs:
   # We only build the packages and integrations as everything else depends on them
   # turbo is cached to sticky disk and pnpm is cached in the standard actions cache
   build:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
@@ -48,7 +48,7 @@ jobs:
           webpackStatsFile: ./packages/api-reference/dist/browser/webpack-stats.json
 
   check-changes:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
       contents: read
@@ -139,349 +139,13 @@ jobs:
           echo "icons_changed=${{ steps.changed-packages-files.outputs.icons_changed_any_changed }}" >> $GITHUB_OUTPUT
           echo "galaxy_changed=${{ steps.changed-packages-files.outputs.galaxy_changed_any_changed }}" >> $GITHUB_OUTPUT
 
-  format:
-    if: github.event_name == 'pull_request'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
-      - name: Setup Node.js
-        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-          # prettier and biome versions are pinned in package.json
-          cache-dependency-path: 'package.json'
-      # Install only root dependencies
-      - name: Install dev dependencies
-        run: pnpm install --filter .
-      - name: Lint code
-        run: pnpm lint:check
-      - name: Check formatting
-        run: pnpm format:check
-
-  lint-icons:
-    if: needs.check-changes.outputs.icons_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
-    timeout-minutes: 15
-    needs: [build, check-changes]
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
-      - name: Setup Node.js
-        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
-      - name: Lint Component Library Icons
-        run: pnpm --filter components lint:icons
-      - name: Lint Icon Library Icons
-        run: pnpm --filter icons lint:icons
-
-  types:
-    needs: [build]
-    runs-on: blacksmith-4vcpu-ubuntu-2204
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: Setup Node
-        uses: ./.github/actions/setup-node
-      - name: Install dependencies
-        run: pnpm install
-      - name: Check types
-        run: pnpm turbo ${{ env.TURBO_FLAGS }} types:check
-
-  knip:
-    if: github.event_name == 'pull_request'
-    needs: [build]
-    runs-on: blacksmith-2vcpu-ubuntu-2204
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: Build
-        uses: ./.github/actions/build
-        with:
-          packages: './{packages,integrations}/**'
-      - name: Knip
-        run: pnpm lint:knip
-
-  test-packages:
-    needs: [build]
-    runs-on: blacksmith-4vcpu-ubuntu-2204
-    timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        shard-index: [1, 2]
-        shard-total: [2]
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: Build packages
-        uses: ./.github/actions/build
-        with:
-          packages: './packages/**'
-      - name: Start test servers
-        run: pnpm script run test-servers & pnpm script wait -p 5051 5052
-        timeout-minutes: 1
-      - name: Run tests
-        run: pnpm vitest packages/* --silent --shard=${{ matrix.shard-index }}/${{ matrix.shard-total }}
-
-  test-integrations:
-    needs: [build]
-    runs-on: blacksmith-4vcpu-ubuntu-2204
-    container:
-      image: scalarapi/playwright-runner:1.56.0
-      options: --privileged
-      env:
-        VM_ID: ${{ env.VM_ID }}
-        GITHUB_REPO_NAME: ${{ env.GITHUB_REPO_NAME }}
-        BLACKSMITH_STICKYDISK_TOKEN: ${{ env.BLACKSMITH_STICKYDISK_TOKEN }}
-        BLACKSMITH_INSTALLATION_MODEL_ID: ${{ env.BLACKSMITH_INSTALLATION_MODEL_ID }}
-        BLACKSMITH_REGION: ${{ env.BLACKSMITH_REGION }}
-    env:
-      HOME: '/root'
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: Build packages
-        uses: ./.github/actions/build
-        with:
-          packages: './integrations/**'
-      - name: Run tests
-        run: pnpm vitest integrations/* --silent
-        # For now we will integrate the E2E tests with the integrations tests as they are quite fast and this avoids another job.
-      - name: Run e2e tests
-        run: pnpm --filter @scalar/nuxt test:e2e
-
-  test-proxy-server:
-    needs: [build]
-    runs-on: blacksmith-2vcpu-ubuntu-2204
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: Setup Go
-        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6
-        with:
-          go-version-file: projects/proxy-scalar-com/go.mod
-          cache: false
-      - name: Run tests for the proxy server (Go)
-        run: cd projects/proxy-scalar-com && go test -v
-
-  test-e2e-api-reference:
-    needs: [build]
-    runs-on: blacksmith-4vcpu-ubuntu-2204
-    container:
-      image: scalarapi/playwright-runner:1.56.0
-      options: --privileged
-      env:
-        VM_ID: ${{ env.VM_ID }}
-        GITHUB_REPO_NAME: ${{ env.GITHUB_REPO_NAME }}
-        BLACKSMITH_STICKYDISK_TOKEN: ${{ env.BLACKSMITH_STICKYDISK_TOKEN }}
-        BLACKSMITH_INSTALLATION_MODEL_ID: ${{ env.BLACKSMITH_INSTALLATION_MODEL_ID }}
-        BLACKSMITH_REGION: ${{ env.BLACKSMITH_REGION }}
-    permissions:
-      contents: read
-      pull-requests: write
-    timeout-minutes: 15
-
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: Build packages
-        uses: ./.github/actions/build
-        with:
-          packages: '@scalar/api-reference...'
-      - name: Generate new DEPLOY_ID
-        run: echo "DEPLOY_ID=$(pnpx uuid)" >> "$GITHUB_ENV" && echo $DEPLOY_ID
-      - name: Run e2e tests (@scalar/api-reference)
-        run: pnpm --filter api-reference test:e2e:ci
-        # Only when the PR is from the same repository
-      - if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository && !contains(github.actor, '[bot]') }}
-        name: Deploy Playwright Report to Netlify
-        run: |
-          pnpx netlify deploy --dir "./packages/api-reference/playwright-report" \
-            --message "Deployed from GitHub (${{ env.DEPLOY_ID }})" \
-            --site ${{ vars.NETLIFY_SITE_ID_COMPONENTS_SNAPSHOTS }} \
-            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
-            --filter @scalar/components \
-            --alias=${{env.DEPLOY_ID}}
-        # Only when the PR is from the same repository
-      - if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository && !contains(github.actor, '[bot]') }}
-        name: Add Netlify Playwright Report URL to the PR
-        uses: daun/playwright-report-summary@93883773b4f4f0951d8bcdb780c6443ca51eaf7b # v3
-        with:
-          comment-title: 'Scalar References End to End Test Results'
-          report-url: https://${{env.DEPLOY_ID}}--scalar-snapshots.netlify.app
-          report-file: packages/api-reference/playwright-results.json
-          report-tag: test-references-e2e
-          footer: |
-            > [!IMPORTANT]
-            > These tests include snapshots that may need to be updated if there are intentional changes to the UI components. To update the snapshots run `pnpm test:e2e:update` in `packages/api-reference` and commit the changes.
-
-  test-e2e-scalar-app:
-    needs: [build]
-    runs-on: blacksmith-2vcpu-ubuntu-2204
-    container:
-      image: scalarapi/playwright-runner:1.56.0
-      options: --privileged
-      env:
-        VM_ID: ${{ env.VM_ID }}
-        GITHUB_REPO_NAME: ${{ env.GITHUB_REPO_NAME }}
-        BLACKSMITH_STICKYDISK_TOKEN: ${{ env.BLACKSMITH_STICKYDISK_TOKEN }}
-        BLACKSMITH_INSTALLATION_MODEL_ID: ${{ env.BLACKSMITH_INSTALLATION_MODEL_ID }}
-        BLACKSMITH_REGION: ${{ env.BLACKSMITH_REGION }}
-    permissions:
-      contents: read
-    timeout-minutes: 15
-
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: Build packages
-        uses: ./.github/actions/build
-        with:
-          packages: 'scalar-app...'
-      - name: Check whether the appFiles are there
-        run: ls -R ./projects/scalar-app/dist
-      - name: Start Xvfb
-        run: |
-          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-          echo "DISPLAY=:99" >> $GITHUB_ENV
-      - name: Run e2e tests (scalar-app)
-        run: pnpm --filter scalar-app test:e2e
-        env:
-          DEBUG: pw:browser*
-          DISPLAY: ':99'
-      - if: failure()
-        name: Show stack traces and debug info
-        working-directory: playwright
-        run: |
-          echo "=== Playwright Logs ==="
-          cat ~/.cache/ms-playwright/browser_logs/*.log || true
-
-          echo "=== Test Results ==="
-          ls -la test-results/ || true
-
-          echo "=== Trace Information ==="
-          for trace_file in test-results/*/trace.zip; do
-            if [ -f "$trace_file" ]; then
-              echo -e "\nAttempting to show trace: $trace_file"
-              timeout 30 pnpm exec playwright show-trace "$trace_file" || echo "Trace viewing timed out"
-            fi
-          done
-
-  test-component-snapshots:
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.head_ref == 'changeset-release/main' || github.head_ref == 'main'
-    needs: [build]
-    runs-on: blacksmith-4vcpu-ubuntu-2204
-    container:
-      image: scalarapi/playwright-runner:1.56.0
-      options: --privileged
-      env:
-        VM_ID: ${{ env.VM_ID }}
-        GITHUB_REPO_NAME: ${{ env.GITHUB_REPO_NAME }}
-        BLACKSMITH_STICKYDISK_TOKEN: ${{ env.BLACKSMITH_STICKYDISK_TOKEN }}
-        BLACKSMITH_INSTALLATION_MODEL_ID: ${{ env.BLACKSMITH_INSTALLATION_MODEL_ID }}
-        BLACKSMITH_REGION: ${{ env.BLACKSMITH_REGION }}
-    permissions:
-      contents: read
-      pull-requests: write
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: Build packages
-        uses: ./.github/actions/build
-        with:
-          packages: '@scalar/components...'
-      - name: Generate new DEPLOY_ID
-        run: echo "DEPLOY_ID=$(pnpx uuid)" >> "$GITHUB_ENV" && echo $DEPLOY_ID
-      - name: Build storybook
-        run: pnpm --filter components build:storybook
-      - name: Run e2e tests (@scalar/components)
-        run: pnpm --filter components test:e2e:ci
-        # Only when the PR is from the same repository
-      - if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository && !contains(github.actor, '[bot]') }}
-        name: Deploy Playwright Report to Netlify
-        run: |
-          pnpx netlify deploy --dir "./packages/components/playwright-report" \
-            --message "Deployed from GitHub (${{ env.DEPLOY_ID }})" \
-            --site ${{ vars.NETLIFY_SITE_ID_COMPONENTS_SNAPSHOTS }} \
-            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
-            --filter @scalar/components \
-            --alias=${{env.DEPLOY_ID}}
-        # Only when the PR is from the same repository
-      - if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository && !contains(github.actor, '[bot]') }}
-        name: Add Netlify Playwright Report URL to the PR
-        uses: daun/playwright-report-summary@93883773b4f4f0951d8bcdb780c6443ca51eaf7b # v3
-        with:
-          comment-title: 'Scalar Components Snapshot Test Results'
-          report-url: https://${{env.DEPLOY_ID}}--scalar-snapshots.netlify.app
-          report-file: packages/components/playwright-results.json
-          report-tag: test-components-snapshots
-
-  test-cdn-snapshots:
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.head_ref == 'changeset-release/main' || github.head_ref == 'main'
-    needs: [build]
-    runs-on: blacksmith-8vcpu-ubuntu-2204
-    container:
-      image: scalarapi/playwright-runner:1.56.0
-      options: --privileged
-      env:
-        VM_ID: ${{ env.VM_ID }}
-        GITHUB_REPO_NAME: ${{ env.GITHUB_REPO_NAME }}
-        BLACKSMITH_STICKYDISK_TOKEN: ${{ env.BLACKSMITH_STICKYDISK_TOKEN }}
-        BLACKSMITH_INSTALLATION_MODEL_ID: ${{ env.BLACKSMITH_INSTALLATION_MODEL_ID }}
-        BLACKSMITH_REGION: ${{ env.BLACKSMITH_REGION }}
-    permissions:
-      contents: read
-      pull-requests: write
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: Build packages
-        uses: ./.github/actions/build
-        with:
-          packages: '@scalar/api-reference...'
-      - name: Generate new DEPLOY_ID
-        run: echo "DEPLOY_ID=$(pnpx uuid)" >> "$GITHUB_ENV" && echo $DEPLOY_ID
-      - name: Run snapshot tests (@scalar/api-reference)
-        run: pnpm --filter api-reference test:e2e:cdn:ci
-        # Only when the PR is from the same repository
-      - if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository && !contains(github.actor, '[bot]') }}
-        name: Deploy Playwright Report to Netlify
-        run: |
-          pnpx netlify deploy --dir "./packages/api-reference/playwright-report-cdn" \
-            --message "Deployed from GitHub (${{ env.DEPLOY_ID }})" \
-            --site ${{ vars.NETLIFY_SITE_ID_COMPONENTS_SNAPSHOTS }} \
-            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
-            --filter @scalar/components \
-            --alias=${{env.DEPLOY_ID}}
-        # Only when the PR is from the same repository
-      - if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository && !contains(github.actor, '[bot]') }}
-        name: Add Netlify Playwright Report URL to the PR
-        uses: daun/playwright-report-summary@93883773b4f4f0951d8bcdb780c6443ca51eaf7b # v3
-        with:
-          comment-title: 'Scalar CDN Snapshot Diff Results'
-          report-url: https://${{env.DEPLOY_ID}}--scalar-snapshots.netlify.app
-          report-file: packages/api-reference/playwright-results-cdn.json
-          report-tag: test-cdn-snapshots
-          custom-info: These tests are **non-blocking** and will not prevent merging of your PR.
-          footer: |
-            > [!IMPORTANT]
-            > These tests detect visual differences between the current PR and the latest CDN build which means **they may be affected by other changes in `main` that haven't been released yet**.
-            >
-            > They can help determine if the changes in the PR are causing any unexpected visual regressions but may be less helpful in isolating the exact cause. For more details see the [readme](https://github.com/scalar/scalar/blob/main/packages/api-reference/test-snapshots/README.md).
-
   # ---------------------------------------------------------------------------------------------------------
   # Publish and deploy packages
 
   npm-publish:
     if: github.ref == 'refs/heads/main'
     # Use a GitHub-hosted runner for npm publish to ensure signed releases
-    runs-on: ${{ startsWith(github.event.head_commit.message, 'RELEASING:') && 'ubuntu-22.04' || 'blacksmith-4vcpu-ubuntu-2204' }}
+    runs-on: ${{ startsWith(github.event.head_commit.message, 'RELEASING:') && 'ubuntu-22.04' || 'ubuntu-latest' }}
     timeout-minutes: 15
     # Avoid running this job in parallel:
     # `changesets/action` creates/updates the release branch, which shouldn't happen in parallel.
@@ -537,9 +201,9 @@ jobs:
 
   todesktop-build:
     if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:')
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [build, test-packages]
+    needs: [build]
 
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
@@ -575,7 +239,7 @@ jobs:
     # Only run this job for PRs from the same repository
     if: github.ref == 'refs/heads/main' || github.event.pull_request.head.repo.full_name == github.repository
     needs: [build]
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
@@ -642,9 +306,9 @@ jobs:
 
   push-to-scalar-registry:
     if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:')
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [build, test-packages]
+    needs: [build]
 
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
@@ -680,7 +344,7 @@ jobs:
     # Run only for PRs from the same repository
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && !contains(github.actor, '[bot]')
     needs: [build]
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
       group: deploy-api-reference-${{ github.ref }}
@@ -723,7 +387,7 @@ jobs:
       (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && !contains(github.actor, '[bot]')) ||
       github.ref == 'refs/heads/main'
     needs: [build]
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
       group: deploy-components-${{ github.ref }}
@@ -782,7 +446,7 @@ jobs:
       !contains(github.actor, '[bot]') &&
       needs.check-changes.outputs.galaxy_changed == 'true'
     needs: [build, check-changes]
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
@@ -830,7 +494,7 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository &&
       !contains(github.actor, '[bot]')
     needs: [deploy-api-reference, deploy-components, galaxy-registry-preview]
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
       pull-requests: write
@@ -869,7 +533,7 @@ jobs:
 
   docker-build-scan:
     if: needs.check-changes.outputs.docker_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [build, check-changes]
     permissions:
@@ -912,7 +576,7 @@ jobs:
 
   docker-publish:
     if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:') && needs.check-changes.outputs.docker_package_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
       group: docker-publish
@@ -968,7 +632,7 @@ jobs:
 
   dotnet-build-test:
     if: needs.check-changes.outputs.dotnet_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [build, check-changes]
     permissions:
@@ -1019,7 +683,7 @@ jobs:
 
   aspnetcore-publish:
     if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:') && needs.check-changes.outputs.aspnetcore_package_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     # We don't want to run `nuget push` (publishing to NuGet) in parallel.
     concurrency:
@@ -1081,7 +745,7 @@ jobs:
 
   aspire-publish:
     if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:') && needs.check-changes.outputs.aspire_package_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
       group: aspire-publish
@@ -1170,7 +834,7 @@ jobs:
 
   fastapi-build-test:
     if: needs.check-changes.outputs.fastapi_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [build, check-changes]
     permissions:
@@ -1199,7 +863,7 @@ jobs:
 
   fastapi-publish:
     if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:') && needs.check-changes.outputs.fastapi_package_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
       group: fastapi-publish
@@ -1232,7 +896,7 @@ jobs:
 
   django-ninja-build-test:
     if: needs.check-changes.outputs.django_ninja_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [build, check-changes]
     permissions:
@@ -1261,7 +925,7 @@ jobs:
 
   django-ninja-publish:
     if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:') && needs.check-changes.outputs.django_ninja_package_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
       group: django-ninja-publish
@@ -1294,7 +958,7 @@ jobs:
 
   rust-build-test:
     if: needs.check-changes.outputs.rust_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [build, check-changes]
     permissions:
@@ -1350,7 +1014,7 @@ jobs:
 
   rust-publish:
     if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:') && needs.check-changes.outputs.rust_package_changed == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
       group: rust-publish
@@ -1405,7 +1069,7 @@ jobs:
   java-build-test:
     if: needs.check-changes.outputs.java_changed == 'true'
     needs: [build, check-changes]
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     timeout-minutes: 10
@@ -1430,7 +1094,7 @@ jobs:
   java-publish:
     if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:') && needs.check-changes.outputs.java_package_changed == 'true'
     needs: [required-jobs-main, java-build-test, check-changes]
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     concurrency:
       group: java-publish
       cancel-in-progress: false
@@ -1483,18 +1147,12 @@ jobs:
 
   required-jobs-pull-requests:
     if: github.event_name == 'pull_request'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 1
     permissions: {}
     needs:
       [
-        build,
-        format,
-        knip,
-        test-packages,
-        test-integrations,
-        test-proxy-server,
-        types,
+        build
       ]
     steps:
       - name: Exit with error if some jobs are not successful
@@ -1503,10 +1161,10 @@ jobs:
 
   required-jobs-main:
     if: github.ref == 'refs/heads/main'
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 1
     permissions: {}
-    needs: [build, test-packages, test-integrations, test-proxy-server, types]
+    needs: [build]
     steps:
       - name: Exit with error if some jobs are not successful
         run: exit 1
