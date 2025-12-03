@@ -139,65 +139,36 @@ jobs:
           echo "icons_changed=${{ steps.changed-packages-files.outputs.icons_changed_any_changed }}" >> $GITHUB_OUTPUT
           echo "galaxy_changed=${{ steps.changed-packages-files.outputs.galaxy_changed_any_changed }}" >> $GITHUB_OUTPUT
 
-  # ---------------------------------------------------------------------------------------------------------
-  # Publish and deploy packages
-
-  npm-publish:
-    if: github.ref == 'refs/heads/main'
-    # Use a GitHub-hosted runner for npm publish to ensure signed releases
-    runs-on: ${{ startsWith(github.event.head_commit.message, 'RELEASING:') && 'ubuntu-22.04' || 'ubuntu-latest' }}
-    timeout-minutes: 15
-    # Avoid running this job in parallel:
-    # `changesets/action` creates/updates the release branch, which shouldn't happen in parallel.
-    # npm publish also shouldn't happen in parallel.
-    concurrency:
-      group: npm-publish
-      cancel-in-progress: false
+  create-github-release:
+    if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: write
-      id-token: write
-    needs: [required-jobs-main]
-
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - name: Build
-        uses: ./.github/actions/build
         with:
-          # Build everything
-          packages: './**'
-      - name: Git Status
-        run: git status
-      - name: Stash changes
-        run: git stash
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@e0145edc7d9d8679003495b11f87bd8ef63c0cba # v1
-        with:
-          # The pull request title.
-          title: 'chore: release'
-          # The command to update version, edit CHANGELOG, read and delete changesets.
-          version: 'pnpm changeset version'
-          # The commit message to use.
-          commit: 'chore: version packages'
-          # The command to use to build and publish packages
-          publish: 'pnpm -r publish --access public'
+          fetch-depth: 0
+      - name: Generate release tag
+        id: tag
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          TAG="release-${DATE}-${SHORT_SHA}"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+      # - name: Create tag
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     git tag -a "${{ steps.tag.outputs.tag }}" -m "Release ${{ steps.tag.outputs.tag }}"
+      #     git push origin "${{ steps.tag.outputs.tag }}"
+      - name: Create GitHub Release
+        run: |
+          gh release create "${{ steps.tag.outputs.tag }}" \
+            --title "Release ${{ steps.tag.outputs.tag }}" \
+            --generate-notes
         env:
-          # https://github.com/settings/tokens/new
-          # Expiration: No expiration
-          # Select: repo.*
-          GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-          # https://www.npmjs.com/settings/YOUR_ACCOUNT_HANDLE/tokens/granular-access-tokens/new
-          # Custom Expiration: 01-01-2100
-          # Permissions: Read and Write
-          # Select packages: @scalar
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Bust CDN cache
-        if: steps.changesets.outputs.published == 'true'
-        uses: fjogeleit/http-request-action@23ad54bcd1178fcff6a0d17538fa09de3a7f0a4d # v1.16.4
-        with:
-          url: 'https://purge.jsdelivr.net/npm/@scalar/api-reference'
-          method: 'GET'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   todesktop-build:
     if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'RELEASING:')
