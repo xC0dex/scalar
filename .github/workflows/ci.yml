@@ -157,16 +157,11 @@ jobs:
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
           TAG="release-${DATE}-${SHORT_SHA}"
           echo "tag=$TAG" >> $GITHUB_OUTPUT
-      # - name: Create tag
-      #   run: |
-      #     git config user.name "github-actions[bot]"
-      #     git config user.email "github-actions[bot]@users.noreply.github.com"
-      #     git tag -a "${{ steps.tag.outputs.tag }}" -m "Release ${{ steps.tag.outputs.tag }}"
-      #     git push origin "${{ steps.tag.outputs.tag }}"
+          echo "date=$DATE" >> $GITHUB_OUTPUT
       - name: Create GitHub Release
         run: |
           gh release create "${{ steps.tag.outputs.tag }}" \
-            --title "Release ${{ steps.tag.outputs.tag }}" \
+            --title "Release ${{ steps.tag.outputs.date }}" \
             --generate-notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
