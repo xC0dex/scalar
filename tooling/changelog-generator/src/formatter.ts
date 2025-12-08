@@ -18,12 +18,6 @@ export interface GitHubInfo {
 export function formatReleaseLine(changeset: NewChangesetWithCommit, githubInfo: GitHubInfo | null): string {
   const description = changeset.summary.trim()
 
-  // If summary already contains a PR link, use it as-is
-  if (hasPRLinkInSummary(description)) {
-    return `- ${description}`
-  }
-
-  // Otherwise, add PR link if available
   const prLink = getPRLink(githubInfo)
   if (prLink) {
     return `- ${prLink}: ${description}`
@@ -34,13 +28,12 @@ export function formatReleaseLine(changeset: NewChangesetWithCommit, githubInfo:
 }
 
 /**
- * Checks if the summary already contains a markdown PR link
+ * Checks if the text already contains a markdown PR link (e.g. "[#123](https://github.com/scalar/scalar/pull/123)")
  * Pattern: [#\d+](...)
  */
-export function hasPRLinkInSummary(summary: string): boolean {
-  // Match markdown link pattern like [#7](https://github.com/) at the start
+function containsPRLink(text: string): boolean {
   const prLinkPattern = /^\[#\d+\].*/
-  return prLinkPattern.test(summary.trim())
+  return prLinkPattern.test(text.trim())
 }
 
 /**
@@ -48,12 +41,15 @@ export function hasPRLinkInSummary(summary: string): boolean {
  * Returns format: [#PR_NUMBER](link) or null
  */
 export function getPRLink(githubInfo: GitHubInfo | null): string | null {
-  if (!githubInfo || !githubInfo.pull || !githubInfo.links.pull) {
+  if (!githubInfo || !githubInfo.links.pull) {
     return null
   }
-  console.log('githubInfo')
-  console.log(githubInfo)
-  return githubInfo.links.pull
+
+  if (containsPRLink(githubInfo.links.pull)) {
+    return githubInfo.links.pull
+  }
+
+  return `[#${githubInfo.pull}](${githubInfo.links.pull})`
 }
 
 /**
@@ -72,7 +68,7 @@ export function formatDependencyChange(githubInfo: GitHubInfo | null, descriptio
   const trimmedDescription = description.trim()
 
   // If description already contains a PR link, use it as-is
-  if (hasPRLinkInSummary(trimmedDescription)) {
+  if (containsPRLink(trimmedDescription)) {
     return `  - ${trimmedDescription}`
   }
 
