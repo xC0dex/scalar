@@ -1,7 +1,7 @@
 import { getInfo } from '@changesets/get-github-info'
 import type { ChangelogFunctions, ModCompWithPackage, NewChangesetWithCommit } from '@changesets/types'
 
-import { formatDependencyChange, formatDependencyHeader, formatReleaseLine } from './formatter'
+import { formatDependencyChange, formatDependencyHeader, formatReleaseLine } from './formatter.js'
 import type { ChangelogOptions } from './types'
 
 const changelogFunctions: ChangelogFunctions = {

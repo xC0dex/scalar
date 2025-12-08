@@ -1,4 +1,4 @@
-import type { NewChangesetWithCommit } from './types'
+import type { NewChangesetWithCommit } from './types.js'
 
 export interface GitHubInfo {
   user: string | null
@@ -15,10 +15,7 @@ export interface GitHubInfo {
  * Format: - [#PR_NUMBER](link): description
  * WITHOUT commit hash, WITHOUT "Thanks @user"
  */
-export function formatReleaseLine(
-  changeset: NewChangesetWithCommit,
-  githubInfo: GitHubInfo | null,
-): string {
+export function formatReleaseLine(changeset: NewChangesetWithCommit, githubInfo: GitHubInfo | null): string {
   const prLink = getPRLink(githubInfo)
   const description = changeset.summary.trim()
 
@@ -46,10 +43,7 @@ export function getPRLink(githubInfo: GitHubInfo | null): string | null {
  * Formats a dependency section header
  * Format: - **@scalar/package-name@version**
  */
-export function formatDependencyHeader(
-  packageName: string,
-  version: string,
-): string {
+export function formatDependencyHeader(packageName: string, version: string): string {
   return `- **${packageName}@${version}**`
 }
 
@@ -57,10 +51,7 @@ export function formatDependencyHeader(
  * Formats a dependency change line
  * Format:   - [#PR_NUMBER](link): description
  */
-export function formatDependencyChange(
-  githubInfo: GitHubInfo | null,
-  description: string,
-): string {
+export function formatDependencyChange(githubInfo: GitHubInfo | null, description: string): string {
   const prLink = getPRLink(githubInfo)
   const trimmedDescription = description.trim()
 
