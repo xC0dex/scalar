@@ -52,7 +52,7 @@ export function getPRLink(githubInfo: GitHubInfo | null): string | null {
     return null
   }
 
-  return `[#${githubInfo.pull}](${githubInfo.links.pull})`
+  return githubInfo.links.pull
 }
 
 /**
