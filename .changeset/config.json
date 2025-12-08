@@ -3,7 +3,7 @@
   "changelog": [
     "@scalar-internal/changelog-generator",
     {
-      "repo": "scalar/scalar"
+      "repo": "xC0dex/scalar"
     }
   ],
   "commit": ["@changesets/cli/commit", { "skipCI": false }],
