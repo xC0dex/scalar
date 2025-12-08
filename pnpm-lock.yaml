@@ -2819,6 +2819,22 @@ importers:
         specifier: catalog:*
         version: 3.5.21(typescript@5.8.3)
 
+  tooling/changelog-generator:
+    dependencies:
+      '@changesets/get-github-info':
+        specifier: ^0.7.0
+        version: 0.7.0(encoding@0.1.13)
+      '@changesets/types':
+        specifier: ^6.1.0
+        version: 6.1.0
+    devDependencies:
+      '@scalar/build-tooling':
+        specifier: workspace:*
+        version: link:../../packages/build-tooling
+      vite:
+        specifier: catalog:*
+        version: 7.1.11(@types/node@22.15.3)(jiti@2.6.1)(lightningcss@1.30.1)(terser@5.31.2)(tsx@4.19.1)(yaml@2.8.0)
+
   tooling/scripts:
     dependencies:
       ansis:
@@ -3793,6 +3809,9 @@ packages:
 
   '@changesets/get-github-info@0.6.0':
     resolution: {integrity: sha512-v/TSnFVXI8vzX9/w3DU2Ol+UlTZcu3m0kXTjTT4KlAdwSvwutcByYwyYn9hwerPWfPkT2JfpoX0KgvCEi8Q/SA==}
+
+  '@changesets/get-github-info@0.7.0':
+    resolution: {integrity: sha512-+i67Bmhfj9V4KfDeS1+Tz3iF32btKZB2AAx+cYMqDSRFP7r3/ZdGbjCo+c6qkyViN9ygDuBjzageuPGJtKGe5A==}
 
   '@changesets/get-release-plan@4.0.5':
     resolution: {integrity: sha512-E6wW7JoSMcctdVakut0UB76FrrN3KIeJSXvB+DHMFo99CnC3ZVnNYDCVNClMlqAhYGmLmAj77QfApaI3ca4Fkw==}
@@ -20569,6 +20588,13 @@ snapshots:
       semver: 7.7.3
 
   '@changesets/get-github-info@0.6.0(encoding@0.1.13)':
+    dependencies:
+      dataloader: 1.4.0
+      node-fetch: 2.7.0(encoding@0.1.13)
+    transitivePeerDependencies:
+      - encoding
+
+  '@changesets/get-github-info@0.7.0(encoding@0.1.13)':
     dependencies:
       dataloader: 1.4.0
       node-fetch: 2.7.0(encoding@0.1.13)
