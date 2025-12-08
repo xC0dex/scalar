@@ -16,15 +16,31 @@ export interface GitHubInfo {
  * WITHOUT commit hash, WITHOUT "Thanks @user"
  */
 export function formatReleaseLine(changeset: NewChangesetWithCommit, githubInfo: GitHubInfo | null): string {
-  const prLink = getPRLink(githubInfo)
   const description = changeset.summary.trim()
 
+  // If summary already contains a PR link, use it as-is
+  if (hasPRLinkInSummary(description)) {
+    return `- ${description}`
+  }
+
+  // Otherwise, add PR link if available
+  const prLink = getPRLink(githubInfo)
   if (prLink) {
     return `- ${prLink}: ${description}`
   }
 
   // Fallback if no PR link available
   return `- ${description}`
+}
+
+/**
+ * Checks if the summary already contains a markdown PR link
+ * Pattern: [#\d+](...)
+ */
+export function hasPRLinkInSummary(summary: string): boolean {
+  // Match markdown link pattern like [#7](https://github.com/...) at the start
+  const prLinkPattern = /^\[#\d+\]\([^)]+\)/
+  return prLinkPattern.test(summary.trim())
 }
 
 /**
@@ -52,9 +68,15 @@ export function formatDependencyHeader(packageName: string, version: string): st
  * Format:   - [#PR_NUMBER](link): description
  */
 export function formatDependencyChange(githubInfo: GitHubInfo | null, description: string): string {
-  const prLink = getPRLink(githubInfo)
   const trimmedDescription = description.trim()
 
+  // If description already contains a PR link, use it as-is
+  if (hasPRLinkInSummary(trimmedDescription)) {
+    return `  - ${trimmedDescription}`
+  }
+
+  // Otherwise, add PR link if available
+  const prLink = getPRLink(githubInfo)
   if (prLink) {
     return `  - ${prLink}: ${trimmedDescription}`
   }

@@ -77,7 +77,7 @@ const changelogFunctions: ChangelogFunctions = {
     }
 
     const lines: string[] = []
-    lines.push('### Updated Dependencies')
+    lines.push('#### Updated Dependencies')
     lines.push('')
 
     // Group dependencies by package name
