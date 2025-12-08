@@ -38,8 +38,8 @@ export function formatReleaseLine(changeset: NewChangesetWithCommit, githubInfo:
  * Pattern: [#\d+](...)
  */
 export function hasPRLinkInSummary(summary: string): boolean {
-  // Match markdown link pattern like [#7](https://github.com/...) at the start
-  const prLinkPattern = /^\[#\d+\]\([^)]+\)/
+  // Match markdown link pattern like [#7](https://github.com/) at the start
+  const prLinkPattern = /^\[#\d+\].*/
   return prLinkPattern.test(summary.trim())
 }
 
