@@ -51,7 +51,8 @@ export function getPRLink(githubInfo: GitHubInfo | null): string | null {
   if (!githubInfo || !githubInfo.pull || !githubInfo.links.pull) {
     return null
   }
-
+  console.log('githubInfo')
+  console.log(githubInfo)
   return githubInfo.links.pull
 }
 
