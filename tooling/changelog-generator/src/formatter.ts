@@ -1,14 +1,6 @@
-import type { NewChangesetWithCommit } from './types.js'
+import type { NewChangesetWithCommit } from '@changesets/types'
 
-export interface GitHubInfo {
-  user: string | null
-  pull: number | null
-  links: {
-    commit: string
-    pull: string | null
-    user: string | null
-  }
-}
+import type { GitHubInfo } from './types.js'
 
 /**
  * Formats a release line for a single change

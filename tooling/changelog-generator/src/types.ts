@@ -1,11 +1,9 @@
-import type {
-  ChangelogFunctions,
-  ModCompWithPackage,
-  NewChangesetWithCommit,
-} from '@changesets/types'
-
-export type { ChangelogFunctions, ModCompWithPackage, NewChangesetWithCommit }
-
-export interface ChangelogOptions {
-  repo: string
+export interface GitHubInfo {
+  user: string | null
+  pull: number | null
+  links: {
+    commit: string
+    pull: string | null
+    user: string | null
+  }
 }

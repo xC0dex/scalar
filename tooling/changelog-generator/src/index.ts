@@ -2,11 +2,10 @@ import { getInfo } from '@changesets/get-github-info'
 import type { ChangelogFunctions, ModCompWithPackage, NewChangesetWithCommit } from '@changesets/types'
 
 import { formatDependencyChange, formatDependencyHeader, formatReleaseLine } from './formatter.js'
-import type { ChangelogOptions } from './types'
 
 const changelogFunctions: ChangelogFunctions = {
   getReleaseLine: async (changeset: NewChangesetWithCommit, _type: string, options: Record<string, any> | null) => {
-    const repo = (options as ChangelogOptions | null)?.repo
+    const repo = options?.repo
     if (!repo) {
       throw new Error('Please provide a `repo` option. It should be a string like "user/repo".')
     }
@@ -67,7 +66,7 @@ const changelogFunctions: ChangelogFunctions = {
     dependenciesUpdated: ModCompWithPackage[],
     options: Record<string, any> | null,
   ) => {
-    const repo = (options as ChangelogOptions | null)?.repo
+    const repo = options?.repo
     if (!repo) {
       throw new Error('Please provide a `repo` option. It should be a string like "user/repo".')
     }
@@ -100,40 +99,6 @@ const changelogFunctions: ChangelogFunctions = {
               commit: changeset.commit,
             })
           : null
-
-        // Extract PR number from summary if GitHub info doesn't have it
-        // let prNumber: number | undefined
-        // if (!githubInfo?.links.pull) {
-        //   const prMatch = changeset.summary.match(/#(\d+)/)
-        //   if (prMatch) {
-        //     prNumber = Number.parseInt(prMatch[1]!, 10)
-        //   }
-        // }
-
-        // // Create GitHub info with PR link
-        // const githubInfoWithPR = githubInfo
-        //   ? {
-        //       ...githubInfo,
-        //       pull: prNumber || githubInfo.pull,
-        //       links: {
-        //         ...githubInfo.links,
-        //         pull:
-        //           prNumber && !githubInfo.links.pull
-        //             ? `https://github.com/${repo}/pull/${prNumber}`
-        //             : githubInfo.links.pull,
-        //       },
-        //     }
-        //   : prNumber
-        //     ? {
-        //         user: null,
-        //         pull: prNumber,
-        //         links: {
-        //           commit: changeset.commit ? `https://github.com/${repo}/commit/${changeset.commit}` : '',
-        //           pull: `https://github.com/${repo}/pull/${prNumber}`,
-        //           user: null,
-        //         },
-        //       }
-        //     : null
 
         const changeLine = formatDependencyChange(githubInfo, changeset.summary)
         lines.push(changeLine)
