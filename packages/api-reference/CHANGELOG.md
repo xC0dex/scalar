@@ -1,5 +1,15 @@
 # @scalar/api-reference
 
+## 1.41.0
+
+### Minor Changes
+
+- [#7](https://github.com/xC0dex/scalar/pull/7): feat: all new vue components
+
+### Patch Changes
+
+- [#9](https://github.com/xC0dex/scalar/pull/9): fix: some non existing issue
+
 ## 1.40.1
 
 ### Patch Changes

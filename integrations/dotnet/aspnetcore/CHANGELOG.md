@@ -1,5 +1,19 @@
 # @scalar/aspnetcore
 
+## 2.12.0
+
+### Minor Changes
+
+- [#7](https://github.com/xC0dex/scalar/pull/7): all new .NET API
+
+### Patch Changes
+
+#### Updated Dependencies
+
+- **@scalar/api-reference@1.41.0**
+  - [#9](https://github.com/xC0dex/scalar/pull/9): fix: some non existing issue
+  - [#7](https://github.com/xC0dex/scalar/pull/7): feat: all new vue components
+
 ## 2.11.1
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @scalar/nuxt
 
+## 0.5.28
+
+### Patch Changes
+
+#### Updated Dependencies
+
+- **@scalar/api-reference@1.41.0**
+  - [#9](https://github.com/xC0dex/scalar/pull/9): fix: some non existing issue
+  - [#7](https://github.com/xC0dex/scalar/pull/7): feat: all new vue components
+
 ## 0.5.27
 
 ### Patch Changes
