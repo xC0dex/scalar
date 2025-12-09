@@ -1,6 +1,6 @@
 import type { NewChangesetWithCommit } from '@changesets/types'
 
-import type { GitHubInfo } from './types.js'
+import type { GitHubInfo } from './types'
 
 /**
  * Formats a release line for a single change
