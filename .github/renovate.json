@@ -382,7 +382,7 @@
       "description": "Group official patch and minor updates for official GitHub actions",
       "matchDepTypes": ["action"],
       "matchPackageNames": ["actions/**"],
-      "matchUpdateTypes": ["patch", "minor"],
+      "matchUpdateTypes": ["patch", "minor", "digest"],
       "groupName": "official-github-actions",
       "additionalBranchPrefix": "github-actions"
     },
