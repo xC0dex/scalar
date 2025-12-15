@@ -6,10 +6,6 @@
   "labels": ["dependencies"],
   "semanticCommits": "enabled",
   "rangeStrategy": "bump",
-  "vulnerabilityAlerts": {
-    "rangeStrategy": "bump",
-    "assignees": ["@hanspagel"]
-  },
   "forkProcessing": "enabled",
   "recreateWhen": "never",
   "packageRules": [
