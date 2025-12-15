@@ -382,7 +382,8 @@
       "matchDepTypes": ["action"],
       "matchPackageNames": ["actions/**"],
       "matchUpdateTypes": ["patch", "minor"],
-      "groupName": "official-github-actions"
+      "groupName": "official-github-actions",
+      "additionalBranchPrefix": "github-actions"
     },
 
     {
